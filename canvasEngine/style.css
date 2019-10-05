@@ -1,0 +1,23 @@
+* {margin: 0; padding: 0}
+
+html { height:100%; width:100%; }
+
+body {
+    align-content:center;
+    align-items:space-around;
+    background-color:#202830;
+    display:grid;
+    justify-items:center;
+    height:100%;
+    width:100%;  
+}
+
+canvas {
+    background: #eee; display: block; margin: 0 auto;
+    width: 600px;
+    height: 600px;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
