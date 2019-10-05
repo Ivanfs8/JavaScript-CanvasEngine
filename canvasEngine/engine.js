@@ -5,13 +5,14 @@ let ctx = canvas.getContext('2d');
 var gameobjects = [];
 
 class GameObject {
-    constructor(sprite, x, y, width, height, update, collider)
+    constructor(sprite, x, y, width, height, start, update, collider)
     {
         this.sprite = new Image();
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.start = start;
         this.update = update;
 
         this.collider = new Collider();        
@@ -24,18 +25,22 @@ class Collider
 {
     constructor(x, y, width, height, OnCollision)
     {
-        this.x = GameObject.x + x;
-        this.y = GameObject.y + y;
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.OnCollision = false;
     }
 }
 
-function collision(A,B) {
-    if (A.x < B.x + B.width && A.x + A.width > B.x && y < B.y + B.height && A.height + A.y > B.y) 
+function CheckColision(A, B) 
+{
+    //A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y
+    //A.y + A.height < B.y || A.y > B.y + B.height || A.x + A.width < B.x || A.x > B.x + B.width
+    if ( A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y  ) 
     {
-        return true;
+        console.log("colision");
+        return true;       
     }
     else 
     {
@@ -72,19 +77,25 @@ function keyUpHandler(e) {
 //mi juego
 
 //player
-const player = new GameObject;
-player.sprite.src = "mario.jpg"
-player.x = 15;
-player.y = 20;
-player.width = 191;
-player.height = 264;
+{
+var player = new GameObject;
+player.sprite.src = "Assets/bar.png"
+player.x = canvas.width/2;
+player.y = canvas.height/2 + 60;
+player.width = 32;
+player.height = 3;
 
-player.collider.x = 0;
-player.collider.y = 0;
+player.collider.x = player.x;
+player.collider.y = player.y;
 player.collider.width = player.width;
 player.collider.height = player.height;
 
-var playerSpeed = 10;
+var playerSpeed = 5;
+
+player.start = function start()
+{
+    return;
+}
 
 player.update = function update()
 {
@@ -101,15 +112,62 @@ player.update = function update()
 
 collisions.push(player);
 gameobjects.push(player);
+}
 
-//render game
-draw();
+//ball
+{
+var ball = new GameObject();
+ball.sprite.src = "Assets/ball.png"
+ball.x = canvas.width/2;
+ball.y = canvas.height/2;
+ball.width = 16;
+ball.height = 8;
 
-function draw() 
+ball.collider.x = ball.x;
+ball.collider.y = ball.y;
+ball.collider.width = ball.width;
+ball.collider.height = ball.height;
+
+var ballDirx = 0;
+var ballDiry = 1;
+
+var ballSpeed = 2;
+
+ball.update = function update()
+{
+    ctx.beginPath()
+    ctx.rect(ball.collider.x, ball.collider.y, ball.collider.width, ball.collider.height);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+
+    if(ball.collider.OnCollision)
+    {
+        ballSpeed = 0;
+    }
+
+    ball.y += ballDiry * ballSpeed;
+    ball.x += ballDirx * ballSpeed;
+}
+
+collisions.push(ball);
+gameobjects.push(ball);
+}
+
+//game updates
+
+function gameStart()
+{
+    for (let index = 0; index < gameobjects.length; index++) {
+        gameobjects[index].start();        
+    }
+}
+
+function gameUpdate() 
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (collisions.length > 1) 
+    //if (collisions.length > 1) 
     {
         for (let index = 0; index < collisions.length; index++) 
         {
@@ -122,21 +180,22 @@ function draw()
             {
                 if (index != index2) 
                 {
-                    collisions[index].OnCollision = collision(collisions[index], collisions[index2]);
+                    collisions[index].collider.OnCollision = CheckColision(collisions[index].collider, collisions[index2].collider);                    
                 }
             }
         }
-    }
-    
+    }    
 
-    for (let index = 0; index < gameobjects.length; index++) {
+    for (let index = 0; index < gameobjects.length; index++) 
+    {
         gameobjects[index].update();        
     }
 
-    for (let index = 0; index < gameobjects.length; index++) {
+    for (let index = 0; index < gameobjects.length; index++) 
+    {
         ctx.drawImage(gameobjects[index].sprite, gameobjects[index].x, gameobjects[index].y, gameobjects[index].width, gameobjects[index].height);        
     }    
     
 }
 
-setInterval(draw, 10);
+setInterval(gameUpdate, 20);
