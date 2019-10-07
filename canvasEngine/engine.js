@@ -59,7 +59,6 @@ player.update = function update()
     if (leftPressed) 
     {
         player.position.x -= player.speed;
-        gameObjects.push(new GameObject(ball));
     }
 
     if (rightPressed) 
@@ -87,7 +86,7 @@ ball.collider.height = ball.height;
 
 ball.dir = new Vector2(-1, 1);
 
-ball.speed = 2;
+ball.speed = 0.5;
 
 ball.active = false;
 
@@ -95,15 +94,17 @@ ball.update = function update()
 {
     if(ball.collider.isColliding)
     {
-        if(ball.collider.collisionDirection.y != 0)
-        {
-            ball.dir.y = -ball.dir.y;
-        }
+        ball.dir.y = -ball.dir.y;
 
-        if(ball.collider.collisionDirection.x != 0)
-        {
-            ball.dir.x = -ball.dir.x;
-        }        
+        // if(ball.collider.collisionDirection.y != 0)
+        // {
+            
+        // }
+
+        // if(ball.collider.collisionDirection.x != 0)
+        // {
+        //     ball.dir.x = -ball.dir.x;
+        // }        
     }
 
     ball.position.y += ball.dir.y * ball.speed;

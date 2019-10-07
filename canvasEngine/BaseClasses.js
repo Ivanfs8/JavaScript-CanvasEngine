@@ -58,12 +58,19 @@ function CheckColision()
             {
                 if (A != B) 
                 {
+                    let colA = collisions[A].collider;
+                    let colB = collisions[B].collider;
                     //collisions[A].collider.isColliding = CheckColision(collisions[A].collider, collisions[B].collider);
                     
                     //A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y
                     //A.y + A.height < B.y || A.y > B.y + B.height || A.x + A.width < B.x || A.x > B.x + B.width
-                    if (collisions[A].collider.x < collisions[B].collider.x + collisions[B].collider.width && collisions[A].collider.x + collisions[A].collider.width > collisions[B].collider.x && collisions[A].collider.y < collisions[B].collider.y + collisions[B].collider.height && collisions[A].collider.height + collisions[A].collider.y > collisions[B].collider.y) 
+                    //collisions[A].collider.x < collisions[B].collider.x + collisions[B].collider.width && collisions[A].collider.x + collisions[A].collider.width > collisions[B].collider.x && collisions[A].collider.y < collisions[B].collider.y + collisions[B].collider.height && collisions[A].collider.height + collisions[A].collider.y > collisions[B].collider.y
+                    if (colB.x > colA.width + colA.x || colA.x > colB.width + colB.x || colB.y > colA.height + colA.y || colA.y > colB.height + colB.y) 
                     {
+                        collisions[A].collider.isColliding = false;         
+                    }
+                    else 
+                    {                        
                         console.log("colision");
 
                         if (collisions[A].collider.x < collisions[B].collider.x) 
@@ -85,11 +92,9 @@ function CheckColision()
                         }
 
                         collisions[A].collider.isColliding = true;
-                        collisions[A].collided = toString(collisions[B]); //no funca                       
-                    }
-                    else 
-                    {
-                        collisions[A].collider.isColliding = false;
+                        collisions[A].collided = collisions[B].name; //no funca
+                        console.log(collisions[A].collided);
+                             
                     }
                 }
             }            
