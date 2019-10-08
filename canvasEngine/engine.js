@@ -66,7 +66,7 @@ var player = new GameObject("player");
 
 player.sprite.src = "Assets/bar.png"
 player.pos.y = -60;
-player.w = 32;
+player.w = 16;
 player.h = 3;
 
 player.col.w = player.w;
