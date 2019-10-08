@@ -9,46 +9,38 @@ class Vector2
     }
 }
 
-class GameObject 
+function GameObject (name, sprite, pos, w, h, col, update)
 {
-    constructor(sprite = new Image(), position = new Vector2(), width, height, collider = new Collider(position.x, position.y, width, height), update)
-    {
-        this.type = "GameObject";
-        this.sprite = sprite;
-        this.position = new Vector2();
-        this.width = width;
-        this.height = height;
-        //this.start = start;
-        this.update = update;
+    this.sprite = new Image();
+    this.pos = new Vector2(0, 0);
 
-        this.collider = collider;
-    }
-
+    this.name = name; 
+    this.w = 1;
+    this.h = 1;
+    this.col = new BoxCollider(w, h);
+    this.update = function(){return};    
 }
 
-class Collider 
-{
-    constructor(x = Number, y = Number, width = Number, height = Number, isColliding = false, collisionDirection = new Vector2 (0,0), collided = null)
-    {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.isColliding = isColliding;
-        this.collided = collided;
-        this.collisionDirection = collisionDirection
-    }
+function BoxCollider (w, h, offset, isColliding, colDir, collided)
+{    
+    this.w = 1;
+    this.h = 1;
+    this.offset = new Vector2(0,0);
+    this.isColliding = false;
+    
+    this.collided = "";
+    this.colDir = new Vector2(0,0);
 }
 
-function CheckColision() 
+function CheckAllColisions() 
 {
     if (collisions.length > 1) 
     {
         for (let i = 0; i < collisions.length; i++) 
         {
             //move collisions
-            collisions[i].collider.x = collisions[i].position.x;
-            collisions[i].collider.y = collisions[i].position.y;
+            collisions[i].col.offset.x = collisions[i].pos.x + collisions[i].col.offset.x;
+            collisions[i].col.offset.y = collisions[i].pos.y + collisions[i].col.offset.y;
         }
 
         for (let A = 0; A < collisions.length; A++) 
@@ -58,46 +50,50 @@ function CheckColision()
             {
                 if (A != B) 
                 {
-                    let colA = collisions[A].collider;
-                    let colB = collisions[B].collider;
-                    //collisions[A].collider.isColliding = CheckColision(collisions[A].collider, collisions[B].collider);
+                    let colA = collisions[A].col;
+                    let colB = collisions[B].col;
+                    //collisions[A].col.isColliding = CheckColision(collisions[A].col, collisions[B].col);
                     
                     //A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y
                     //A.y + A.height < B.y || A.y > B.y + B.height || A.x + A.width < B.x || A.x > B.x + B.width
-                    //collisions[A].collider.x < collisions[B].collider.x + collisions[B].collider.width && collisions[A].collider.x + collisions[A].collider.width > collisions[B].collider.x && collisions[A].collider.y < collisions[B].collider.y + collisions[B].collider.height && collisions[A].collider.height + collisions[A].collider.y > collisions[B].collider.y
-                    if (colB.x > colA.width + colA.x || colA.x > colB.width + colB.x || colB.y > colA.height + colA.y || colA.y > colB.height + colB.y) 
+                    //collisions[A].col.x < collisions[B].col.x + collisions[B].col.width && collisions[A].col.x + collisions[A].col.width > collisions[B].col.x && collisions[A].col.y < collisions[B].col.y + collisions[B].col.height && collisions[A].col.height + collisions[A].col.y > collisions[B].col.y
+                    if (colB.offset.x > colA.width + colA.offset.x || colA.offset.x > colB.width + colB.offset.x || colB.offset.y > colA.height + colA.offset.y || colA.offset.y > colB.height + colB.offset.y) 
                     {
-                        collisions[A].collider.isColliding = false;         
+                        collisions[A].col.isColliding = false;         
                     }
                     else 
                     {                        
                         console.log("colision");
 
-                        if (collisions[A].collider.x < collisions[B].collider.x) 
+                        if (collisions[A].col.x < collisions[B].col.x) 
                         {
-                            collisions[A].collider.collisionDirection.x = -1;
+                            collisions[A].col.colDir.x = -1;
                         }
-                        else if (collisions[A].collider.x > collisions[B].collider.x) 
+                        else if (collisions[A].col.x > collisions[B].col.x) 
                         {
-                            collisions[A].collider.collisionDirection.x = 1;
-                        }
-
-                        if (collisions[A].collider.y < collisions[B].collider.x) 
-                        {
-                            collisions[A].collider.collisionDirection.y = -1;
-                        }
-                        else if (collisions[A].collider.y > collisions[B].collider.y) 
-                        {
-                            collisions[A].collider.collisionDirection.y = 1;
+                            collisions[A].col.colDir.x = 1;
                         }
 
-                        collisions[A].collider.isColliding = true;
-                        collisions[A].collided = collisions[B].name; //no funca
-                        console.log(collisions[A].collided);
-                             
+                        if (collisions[A].col.y < collisions[B].col.x) 
+                        {
+                            collisions[A].col.colDir.y = -1;
+                        }
+                        else if (collisions[A].col.y > collisions[B].col.y) 
+                        {
+                            collisions[A].col.colDir.y = 1;
+                        }
+
+                        collisions[A].col.isColliding = true;
+                        collisions[A].collided = collisions[B].name;
+                        console.log(collisions[A].collided);                             
                     }
                 }
             }            
         }        
     }
+}
+
+function RigidBody()
+{
+
 }

@@ -14,13 +14,28 @@ document.addEventListener("keyup", keyUpHandler, false);
 
 var rightPressed;
 var leftPressed;
+var upPressed;
+var downPressed;
 
 function keyDownHandler(e) {
-    if(e.keyCode == 39) {
+    if(e.keyCode == 39)
+    {
         rightPressed = true;
     }
-    else if(e.keyCode == 37) {
+    
+    if(e.keyCode == 37)
+    {
         leftPressed = true;
+    }
+
+    if(e.keyCode == 38)
+    {
+        upPressed = true;
+    }
+
+    if(e.keyCode == 40)
+    {
+        downPressed = true;
     }
 }
 
@@ -28,25 +43,34 @@ function keyUpHandler(e) {
     if(e.keyCode == 39) {
         rightPressed = false;
     }
-    else if(e.keyCode == 37) {
+    
+    if(e.keyCode == 37) {
         leftPressed = false;
+    }
+
+    if(e.keyCode == 38)
+    {
+        upPressed = false;
+    }
+
+    if(e.keyCode == 40)
+    {
+        downPressed = false;
     }
 }
 
 //mi juego
 
 //player
-var player = new GameObject();
-player.sprite.src = "Assets/bar.png"
-player.position.x = canvas.width/2;
-player.position.y = canvas.height/2 + 60;
-player.width = 32;
-player.height = 3;
+var player = new GameObject("player");
 
-player.collider.x = player.position.x;
-player.collider.y = player.position.y;
-player.collider.width = player.width;
-player.collider.height = player.height;
+player.sprite.src = "Assets/bar.png"
+player.pos.y = -60;
+player.w = 32;
+player.h = 3;
+
+player.col.w = player.w;
+player.col.h = player.h;
 player.speed = 5;
 
 // player.start = function start()
@@ -58,13 +82,23 @@ player.update = function update()
 {
     if (leftPressed) 
     {
-        player.position.x -= player.speed;
+        player.pos.x -= player.speed;
     }
 
     if (rightPressed) 
     {
-        player.position.x += player.speed;
-    }    
+        player.pos.x += player.speed;
+    }
+
+    if(upPressed)
+    {
+        player.pos.y += player.speed;
+    }
+
+    if(downPressed)
+    {
+        player.pos.y -= player.speed;
+    }
 }
 
 collisions.push(player);
@@ -72,17 +106,13 @@ gameObjects.push(player);
 //}
 
 //ball
-var ball = new GameObject();
+var ball = new GameObject("Ball");
 ball.sprite.src = "Assets/ball.png"
-ball.position.x = canvas.width/2;
-ball.position.y = canvas.height/2;
-ball.width = 16;
-ball.height = 8;
+ball.w = 16;
+ball.h = 8;
 
-ball.collider.x = ball.position.x;
-ball.collider.y = ball.position.y;
-ball.collider.width = ball.width;
-ball.collider.height = ball.height;
+ball.col.w = ball.w;
+ball.col.h = ball.h;
 
 ball.dir = new Vector2(-1, 1);
 
@@ -92,30 +122,27 @@ ball.active = false;
 
 ball.update = function update()
 {
-    if(ball.collider.isColliding)
+    if(ball.col.isColliding)
     {
         ball.dir.y = -ball.dir.y;
 
-        // if(ball.collider.collisionDirection.y != 0)
+        // if(ball.col.collisionDirection.y != 0)
         // {
             
         // }
 
-        // if(ball.collider.collisionDirection.x != 0)
+        // if(ball.col.collisionDirection.x != 0)
         // {
         //     ball.dir.x = -ball.dir.x;
         // }        
     }
 
-    ball.position.y += ball.dir.y * ball.speed;
-    ball.position.x += ball.dir.x * ball.speed;
+    ball.pos.y += ball.dir.y * ball.speed;
+    ball.pos.x += ball.dir.x * ball.speed;
 }
 
-collisions.push(ball);
-gameObjects.push(ball);
-
-
-
+// collisions.push(ball);
+// gameObjects.push(ball);
 
 //game updates
 
@@ -133,16 +160,21 @@ function gameUpdate()
         gameObjects[index].update();                    
     }
 
-    CheckColision();
+    CheckAllColisions();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    ctx.save();
+    ctx.translate(canvas.width/2, canvas.height/2);
+    ctx.scale(1, -1);
+
     for (let index = 0; index < gameObjects.length; index++) 
     {
-        ctx.drawImage(gameObjects[index].sprite, gameObjects[index].position.x, gameObjects[index].position.y, gameObjects[index].width, gameObjects[index].height);        
+        ctx.drawImage(gameObjects[index].sprite, gameObjects[index].pos.x, gameObjects[index].pos.y, gameObjects[index].w, gameObjects[index].h);        
     }    
     
-    
+    ctx.restore();
+    requestAnimationFrame(gameUpdate);
 }
 
-setInterval(gameUpdate, 10);
+gameUpdate();
