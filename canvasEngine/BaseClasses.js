@@ -9,16 +9,20 @@ class Vector2
     }
 }
 
-function GameObject (name, sprite, pos, w, h, col, update)
+function GameObject (name, src, col)
 {
-    this.sprite = new Image();
+    let sprite = new Image();
+    sprite.src = src;
+    this.sprite = sprite;
     this.pos = new Vector2(0, 0);
 
     this.name = name; 
-    this.w = 1;
-    this.h = 1;
-    this.col = new BoxCollider(w, h);
-    this.update = function(){return};    
+    this.w = sprite.width;
+    this.h = sprite.height;
+    this.col = new BoxCollider(this.w, this.h);
+    this.update = function(){return};
+
+    //return GameObject;
 }
 
 function BoxCollider (w, h, offset, isColliding, colDir, collided)
@@ -50,14 +54,14 @@ function CheckAllColisions()
             {
                 if (A != B) 
                 {
-                    let colA = collisions[A].col;
-                    let colB = collisions[B].col;
+                    let colA = collisions[A];
+                    let colB = collisions[B];
                     //collisions[A].col.isColliding = CheckColision(collisions[A].col, collisions[B].col);
                     
                     //A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y
                     //A.y + A.height < B.y || A.y > B.y + B.height || A.x + A.width < B.x || A.x > B.x + B.width
                     //collisions[A].col.x < collisions[B].col.x + collisions[B].col.width && collisions[A].col.x + collisions[A].col.width > collisions[B].col.x && collisions[A].col.y < collisions[B].col.y + collisions[B].col.height && collisions[A].col.height + collisions[A].col.y > collisions[B].col.y
-                    if (colB.offset.x > colA.width + colA.offset.x || colA.offset.x > colB.width + colB.offset.x || colB.offset.y > colA.height + colA.offset.y || colA.offset.y > colB.height + colB.offset.y) 
+                    if (colB.pos.x > colA.col.w + colA.pos.x || colA.pos.x > colB.col.w + colB.pos.x || colB.pos.y > colA.col.h + colA.pos.y || colA.pos.y > colB.col.h + colB.pos.y) 
                     {
                         collisions[A].col.isColliding = false;         
                     }
@@ -65,20 +69,20 @@ function CheckAllColisions()
                     {                        
                         console.log("colision");
 
-                        if (collisions[A].col.x < collisions[B].col.x) 
+                        if (collisions[A].pos.x < collisions[B].pos.x) 
                         {
                             collisions[A].col.colDir.x = -1;
                         }
-                        else if (collisions[A].col.x > collisions[B].col.x) 
+                        else if (collisions[A].pos.x > collisions[B].pos.x) 
                         {
                             collisions[A].col.colDir.x = 1;
                         }
 
-                        if (collisions[A].col.y < collisions[B].col.x) 
+                        if (collisions[A].pos.y < collisions[B].pos.x) 
                         {
                             collisions[A].col.colDir.y = -1;
                         }
-                        else if (collisions[A].col.y > collisions[B].col.y) 
+                        else if (collisions[A].pos.y > collisions[B].pos.y) 
                         {
                             collisions[A].col.colDir.y = 1;
                         }
