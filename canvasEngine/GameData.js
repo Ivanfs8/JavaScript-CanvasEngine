@@ -8,6 +8,7 @@ player.h = 3;
 
 player.col.w = player.w;
 player.col.h = player.h;
+player.col.debug = true;
 player.speed = 5;
 
 // player.start = function start()
@@ -36,6 +37,10 @@ player.update = function update()
     {
         player.pos.y -= player.speed;
     }
+
+    if(player.col.isColliding){
+        console.log("player col");
+    }
 }
 
 collisions.push(player);
@@ -43,8 +48,7 @@ gameObjects.push(player);
 //}
 
 //ball
-var ball = new GameObject("Ball");
-ball.sprite.src = "Assets/ball.png"
+var ball = new GameObject("Ball", "Assets/ball.png"); 
 ball.w = 8;
 ball.h = 8;
 
@@ -57,81 +61,54 @@ ball.speed = 1;
 
 ball.update = function update()
 {
-    if(ball.col.isColliding)
+    if(ball.col.collided == "Player")
     {
-        if(ball.col.collided == "Player"){
-            ball.dir.y = -ball.dir.y;
-            //ball.dir.x = -ball.dir.x;
-        }
-        // else {
-        //     if(ball.col.colDir.y != 0){
-        //         ball.dir.y = -ball.dir.y;
-        //     }
-
-        //     if(ball.col.colDir.x != 0){
-        //         ball.dir.x = -ball.dir.x;
-        //     }
-        // }        
-
-        // if(ball.col.collisionDirection.y != 0)
-        // {
-            
-        // }
-
-        // if(ball.col.collisionDirection.x != 0)
-        // {
-        //     ball.dir.x = -ball.dir.x;
-        // }        
+        ball.dir.y = 1;
+        
+        //console.log(ball.dir);
     }
 
+    if(ball.col.collided == "Wall")
+    {
+        ball.dir.x = 1;
+    }
+
+    //console.log(ball.col.isColliding);
     ball.pos.y += ball.dir.y * ball.speed;
-    ball.pos.x += ball.dir.x * ball.speed;
+    ball.pos.x += ball.dir.x * ball.speed;    
 }
 
-collisions.push(ball);
 gameObjects.push(ball);
+collisions.push(ball);
 
 //var brick = new GameObject("Brick");
 
-function Wall () {
+class Wall extends GameObject{
+    constructor(){
+        super()
 
-//new GameObject("Wall", "Assets/Brick.png");
-// this.w = 16;
-// this.h = 20;
+        this.name = "Wall";
+        this.sprite.src = "Assets/Brick.png";
+        this.w = 16;
+        this.h = canvas.height;
+        
+        this.col = new BoxCollider(this.w, this.h);
+        this.col.w = 16;
+        this.col.h = canvas.height;
+    }
 }
 
 var leftWall = new Wall();
-//leftWall.pos.x = 0;
-//gameObjects.push(leftWall);
-//collisions.push(leftWall);
+leftWall.pos.x = -canvas.width*0.5;
+leftWall.pos.y = 0;
+leftWall.col.debug = true;
+
+gameObjects.push(leftWall);
+collisions.push(leftWall);
 
 var rightWall = new Wall();
-//rightWall.pos.x = 40;
+rightWall.pos.x = 0;
 //gameObjects.push(rightWall);
 //collisions.push(rightWall);
-
-
-class mierda{
-    constructor(tipo, olor){
-        this.nombre = "nombre";
-        this.tipo = tipo;
-        this.olor = olor;
-    }
-}
-
-class caca extends mierda{
-    constructor(nombre, tipo, olor){
-        super(nombre, tipo, olor)
-        
-        this.tipo = "caca";
-        this.olor = "a caca";        
-    }
-}
-
-var caquita = new caca();
-
-console.log(caquita.nombre + " " + caquita.tipo + " " + caquita.olor);
-
-
 
 window.onload = gameUpdate();

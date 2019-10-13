@@ -1,6 +1,8 @@
 //sistema
 let canvas = document.getElementById("Canvas");
 let ctx = canvas.getContext('2d');
+ctx.translate(canvas.width*0.5, canvas.height*0.5);
+ctx.scale(1,-1);
 ctx.save();
 
 var gameObjects = [];
@@ -73,21 +75,38 @@ function gameUpdate()
 {
     for (let index = 0; index < gameObjects.length; index++) 
     {        
-        gameObjects[index].update();                    
+        gameObjects[index].update();
     }
 
     CheckAllColisions();
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);   
+    ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);   
 
-    //ctx.translate(canvas.width/2, canvas.height/2);
-    //ctx.scale(1, -1);
-    
     for (let index = 0; index < gameObjects.length; index++) 
     {
-        ctx.drawImage(gameObjects[index].sprite, gameObjects[index].pos.x + canvas.width*0.5, -gameObjects[index].pos.y + canvas.height*0.5, gameObjects[index].w, gameObjects[index].h);
-                        
-    }   
+        //ctx.translate(gameObjects[index].pos.x, gameObjects[index].pos.y)
+        ctx.drawImage(gameObjects[index].sprite, gameObjects[index].pos.x - gameObjects[index].w*0.5, gameObjects[index].pos.y + gameObjects[index].h*0.5, gameObjects[index].w, -gameObjects[index].h);                        
+    }
+
+    //collision debugger
+    for (let index = 0; index < collisions.length; index++) 
+    {
+        if(collisions[index].col.debug)
+        {
+            let x = collisions[index].pos.x - collisions[index].w*0.5 + collisions[index].col.offset.x;
+            let y = collisions[index].pos.y - collisions[index].h*0.5 + collisions[index].col.offset.y;
+            let w = collisions[index].col.w;
+            let h = collisions[index].col.h;
+
+            ctx.beginPath();
+            ctx.rect(x, y, w, h);
+            //ctx.fillStyle = "#0095DD";
+            ctx.strokeStyle = "green";
+            ctx.stroke();
+            ctx.closePath();  
+        }             
+    }
+
     //ctx.restore();
     requestAnimationFrame(gameUpdate);
 }
