@@ -2,7 +2,7 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 
 class Vector2 
 {
-    constructor(x,y)
+    constructor(x = 0, y = 0)
     {
         this.x = x;
         this.y = y;
@@ -11,6 +11,7 @@ class Vector2
 
 class GameObject {
     constructor(name = "GameObject", src) {
+        this.gameObject = 0;
         this.sprite = new Image();
         this.sprite.src = src;
         this.pos = new Vector2(0, 0);
@@ -18,10 +19,17 @@ class GameObject {
         this.w = this.sprite.width;
         this.h = this.sprite.height;
         this.col = [new BoxCollider(this.w, this.h)];
-        this.update = function () { return; };
+        this.start = function() { return; };
+        this.update = function() { return; };
         //return GameObject;
     }
 }
+
+function Destroy(toDestroy){
+    toDestroy = toDestroy.gameObject;
+    gameObjects = gameObjects.filter(k => k.gameObject != toDestroy);
+    //gameObjects.slice(toRemove, 1);
+};
 
 class BoxCollider {
     constructor(w, h, x = 0, y = 0) {
@@ -47,30 +55,36 @@ function boxCollisions(a, b)
         let B1 = new Vector2( (b.pos.x + b.col[0].offset.x) - b.col[0].w * 0.5, (b.pos.y + b.col[0].offset.y) - b.col[0].h * 0.5);
         let B2 = new Vector2( (b.pos.x + b.col[0].offset.x) + b.col[0].w * 0.5, (b.pos.y + b.col[0].offset.y) + b.col[0].h * 0.5);
 
-        if (A1.x < B2.x &&
-            A2.x > B1.x &&
-            A1.y < B2.y &&
-            A2.y > B1.y) {
-
+        if (A1.x < B2.x && A2.x > B1.x &&
+            A1.y < B2.y && A2.y > B1.y) 
+        {
             a.col[i].isColliding = true;
             a.col[i].collided = b.name;
 
-            ctx.beginPath();
-            ctx.rect(A1.x, A1.y, a.col[i].w, a.col[i].h);
-            ctx.strokeStyle = "green";
-            ctx.stroke();
-            ctx.closePath();
+            if(a.col[i].debug)
+            {
+                ctx.beginPath();
+                ctx.rect(A1.x, A1.y, a.col[i].w, a.col[i].h);
+                ctx.strokeStyle = "green";
+                ctx.stroke();
+                ctx.closePath();
+            }
+            
             //return true;
         }
         else {
             a.col[i].isColliding = false;
             a.col[i].collided = "";
 
-            ctx.beginPath();
-            ctx.rect(A1.x, A1.y, a.col[i].w, a.col[i].h );
-            ctx.strokeStyle = "red";
-            ctx.stroke();
-            ctx.closePath();            
+            if(a.col[i].debug)
+            {
+                ctx.beginPath();
+                ctx.rect(A1.x, A1.y, a.col[i].w, a.col[i].h);
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+                ctx.closePath();
+            }
+                        
             //return false;
         }
 
