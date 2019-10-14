@@ -2,7 +2,7 @@
 let canvas = document.getElementById("Canvas");
 let ctx = canvas.getContext('2d');
 ctx.translate(canvas.width*0.5, canvas.height*0.5);
-ctx.scale(1,-1);
+ctx.scale(1, -1);
 ctx.save();
 
 var gameObjects = [];
@@ -78,34 +78,59 @@ function gameUpdate()
         gameObjects[index].update();
     }
 
-    CheckAllColisions();
-    
     ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);   
 
+    
     for (let index = 0; index < gameObjects.length; index++) 
     {
         //ctx.translate(gameObjects[index].pos.x, gameObjects[index].pos.y)
         ctx.drawImage(gameObjects[index].sprite, gameObjects[index].pos.x - gameObjects[index].w*0.5, gameObjects[index].pos.y + gameObjects[index].h*0.5, gameObjects[index].w, -gameObjects[index].h);                        
     }
 
-    //collision debugger
-    for (let index = 0; index < collisions.length; index++) 
+    //CheckAllColisions();
+    for (let a = 0; a < gameObjects.length; a++) 
     {
-        if(collisions[index].col.debug)
+        for (let b = 0; b < gameObjects.length; b++) 
         {
-            let x = collisions[index].pos.x - collisions[index].w*0.5 + collisions[index].col.offset.x;
-            let y = collisions[index].pos.y - collisions[index].h*0.5 + collisions[index].col.offset.y;
-            let w = collisions[index].col.w;
-            let h = collisions[index].col.h;
+            if(a != b)
+            {
+                boxCollisions(gameObjects[a], gameObjects[b]);
 
-            ctx.beginPath();
-            ctx.rect(x, y, w, h);
-            //ctx.fillStyle = "#0095DD";
-            ctx.strokeStyle = "green";
-            ctx.stroke();
-            ctx.closePath();  
-        }             
+                if(gameObjects[a].col[0].isColliding)
+                {
+                    
+                
+                    
+                    break;
+                }
+            }
+            
+        }
+        
     }
+    
+    
+
+    
+
+    //collision debugger
+    // for (let index = 0; index < collisions.length; index++) 
+    // {
+    //     if(collisions[index].col.debug)
+    //     {
+    //         let x = collisions[index].pos.x - collisions[index].w*0.5 + collisions[index].col.offset.x;
+    //         let y = collisions[index].pos.y - collisions[index].h*0.5 + collisions[index].col.offset.y;
+    //         let w = collisions[index].col.w;
+    //         let h = collisions[index].col.h;
+
+    //         ctx.beginPath();
+    //         ctx.rect(x, y, w, h);
+    //         //ctx.fillStyle = "#0095DD";
+    //         ctx.strokeStyle = "green";
+    //         ctx.stroke();
+    //         ctx.closePath();  
+    //     }             
+    // }
 
     //ctx.restore();
     requestAnimationFrame(gameUpdate);
