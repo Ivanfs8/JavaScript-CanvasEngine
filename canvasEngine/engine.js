@@ -131,19 +131,14 @@ function gameStart(Scenes, level = 0)
 
 function gameUpdate() 
 {
+    ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);
+
     for (let i = 0; i < gameObjects.length; i++) 
     {        
         gameObjects[i].update();
     }
 
-    ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);   
-    
-    for (let i = 0; i < gameObjects.length; i++) 
-    {
-        drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
-        
-        //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
-    }
+    physicsUpdate()
 
     //CheckAllColisions();
     for (let a = 0; a < gameObjects.length; a++) 
@@ -152,7 +147,42 @@ function gameUpdate()
         {
             if(a != b)
             {
-                boxCollisions(gameObjects[a], gameObjects[b]);
+                if(gameObjects[a].rb != null && gameObjects[a].rb != undefined && gameObjects[a].rb.type != "Static")
+                {
+                    let box = 
+                    {
+                        x : gameObjects[a].pos.x,
+                        y : gameObjects[a].pos.y,
+                        w : gameObjects[a].col[0].w,
+                        h : gameObjects[a].col[0].h,
+                        vx : gameObjects[a].rb.vel.x,
+                        vy : gameObjects[a].rb.vel.y
+                    }
+                    
+                    let test = new GameObject("", "")
+                    test.pos.x = box.vx > 0 ? box.x + box.vx : box.x + box.vx
+                    test.pos.y = box.vy > 0 ? box.y + box.vy : box.y + box.vy
+                    test.col[0] =                     
+                    new BoxCollider(box.vx > 0 ? box.vx + box.w : box.w - box.vx,
+                                    box.vy > 0 ? box.vy + box.h : box.h - box.vy)
+                    
+                    test.col[0].debug = true
+                    boxCollisions(test, gameObjects[b])
+                    if(test.col[0].isColliding)
+                    {
+                        SweepAABB(gameObjects[a], gameObjects[b])
+                    }
+                    else
+                    {
+                        gameObjects[a].col[0].isColliding = false;
+                        gameObjects[a].col[0].collided = ""
+                        gameObjects[a].col[0].colDir = new Vector2 (0,0)
+                    }                   
+                }
+                else
+                {
+                    boxCollisions(gameObjects[a], gameObjects[b]);
+                }                
 
                 if(gameObjects[a].col[0].isColliding)
                 {                   
@@ -161,7 +191,16 @@ function gameUpdate()
             }
             
         }        
-    }   
+    }
+
+       
+    
+    for (let i = 0; i < gameObjects.length; i++) 
+    {
+        drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
+        
+        //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
+    }
 
     rID = requestAnimationFrame(gameUpdate);       
 }

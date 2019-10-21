@@ -19,6 +19,8 @@ class GameObject {
         this.w = this.sprite.width;
         this.h = this.sprite.height;
         this.col = [new BoxCollider(this.w, this.h)];
+        this.rb = new RigidBody("Static");
+
         this.start = function() { return; };
         this.update = function() { return; };
         //return GameObject;
@@ -91,102 +93,198 @@ function boxCollisions(a, b)
     }
 }
 
-function CheckAllColisions() 
+function SweepAABB(a, b /*, normalX, normalY*/) 
 {
-    if (collisions.length > 0) 
+    let normalX, normalY
+
+    let b1 = 
     {
-        for (let A = 0; A < collisions.length; A++) 
+        x : (a.pos.x + a.col[0].offset.x) - a.col[0].w * 0.5,
+        y : (a.pos.y + a.col[0].offset.y) - a.col[0].h * 0.5,
+        w : a.col[0].w,
+        h : a.col[0].h,
+        vx : a.rb.vel.x,
+        vy : a.rb.vel.y
+    }
+
+    let b2 = 
+    {
+        x : (b.pos.x + b.col[0].offset.x) - b.col[0].w * 0.5,
+        y : (b.pos.y + b.col[0].offset.y) - b.col[0].h * 0.5,
+        w : b.col[0].w,
+        h : b.col[0].h,
+        vx : b.rb.vel.x,
+        vy : b.rb.vel.y
+    }
+
+    let invEntry = new Vector2()
+    let invExit = new Vector2()
+
+    if (b1.vx > 0)
+    {
+        invEntry.x = b2.x - (b1.x + b1.w)
+        invExit.x = (b2.x + b2.w) - b1.x
+    } 
+    else 
+    {
+        invEntry.x = (b2.x + b2.w) - b1.x;
+        invExit.x = b2.x - (b1.x + b1.w)
+    }
+
+    if (b1.vy > 0)
+    {
+        invEntry.y = b2.y - (b1.y + b1.h);
+        invExit.y = (b2.y + b2.h) - b1.y;
+    }
+    else
+    {
+        invEntry.y = (b2.y + b2.h) - b1.y;
+        invExit.y = b2.y - (b1.y + b1.h);
+    }
+
+    let Entry = new Vector2()
+    let Exit = new Vector2()
+
+    if (b1.vx == 0)
+    {
+        Entry.x = -Infinity
+        Exit.x = Infinity
+    }
+    else
+    {
+        Entry.x = invEntry.x / b1.vx;
+        Exit.x = invExit.x / b1.vx;
+    }
+
+    if (b1.vy == 0)
+    {
+        Entry.y = -Infinity;
+        Exit.y = Infinity;
+    }
+    else
+    {
+        Entry.y = invEntry.y / b1.vy;
+        Exit.y = invExit.y / b1.vy;
+    }
+
+    let entryTime = Math.max(Entry.x, Entry.y);
+    let exitTime = Math.min(Exit.x, Exit.y);
+
+    if (entryTime > exitTime || Entry.x < 0 && Entry.y < 0 || Entry.x > 1 || Entry.y > 1)
+    {
+        normalX = 0;
+        normalY = 0;
+        a.col[0].isColliding = false;
+        a.col[0].collided = ""
+        a.col[0].colDir = new Vector2 (0, 0)      
+    }
+    else //hubo colision
+    {
+        if (Entry.x > Entry.y) //calcular normal
         {
-            let xA = collisions[A].pos.x - collisions[A].w*0.5 + collisions[A].col.offset.x;
-            let yA = collisions[A].pos.y + collisions[A].h*0.5 + collisions[A].col.offset.y;
-            let wA = collisions[A].col.w;
-            let hA = collisions[A].col.h;
-            //Check collisions
-            for (let B = 0; B < collisions.length; B++) 
+            if (invEntry.x < 0) 
             {
-                if (A != B)
-                {
-                    //let colA = collisions[A];
-                    //let colB = collisions[B];                    
-                    
-                    let xB = collisions[B].pos.x - collisions[B].w*0.5 + collisions[B].col.offset.x;
-                    let yB = collisions[B].pos.y - collisions[B].h*0.5 + collisions[B].col.offset.y;
-                    let wB = collisions[B].col.w;
-                    let hB = collisions[B].col.h;
+                normalX = 1
+                normalY = 0
+            }
+            else 
+            {
+                normalX = -1
+                normalY = 0
+            }
+        }
+        else
+        {
+            if(invEntry.y < 0)
+            {
+                normalX = 0
+                normalY = 1
+            }
+            else
+            {
+                normalX = 0
+                normalY = -1
+            }
+        }
 
-                    //collisions[A].col.isColliding = CheckColision(collisions[A].col, collisions[B].col);
-                    
-                    //A.x < B.x + B.width && A.x + A.width > B.x && A.y < B.y + B.height && A.height + A.y > B.y
-                    //A.y + A.height < B.y || A.y > B.y + B.height || A.x + A.width < B.x || A.x > B.x + B.width
-                    //collisions[A].col.x < collisions[B].col.x + collisions[B].col.width && collisions[A].col.x + collisions[A].col.width > collisions[B].col.x && collisions[A].col.y < collisions[B].col.y + collisions[B].col.height && collisions[A].col.height + collisions[A].col.y > collisions[B].col.y
-                    if (xB > wA + xA || xA > wB + xB || yB > hA + yA || yA > hB + yB) 
-                    {
-                        collisions[A].col.isColliding = false;
-                        collisions[A].col.collided = "";
-                        collisions[A].col.colDir.x = 0;
-                        collisions[A].col.colDir.y = 0;
-                    }
-                    else 
-                    {
-                        xA = collisions[A].pos.x + collisions[A].col.offset.x;
-                        yA = collisions[A].pos.y + collisions[A].col.offset.y;
-                        xB = collisions[B].pos.x + collisions[B].col.offset.x;
-                        yB = collisions[B].pos.y + collisions[B].col.offset.y;
+        //return entryTime
+        a.col[0].isColliding = true;
+        a.col[0].collided = b.name
+        a.col[0].colDir = new Vector2 (normalX, normalY)
+        console.log(normalX + ", " + normalY + ". EntryTime: " + entryTime + ", V: " + b1.vx + ", " + b1.vy)   
 
-                        let A1 = new Vector2(xA - wA*0.5, yA + hA *0.5);
-                        let A2 = new Vector2(xA + wA*0.5, yA + hA *0.5);
-                        let A3 = new Vector2(xA + wA*0.5, yA - hA *0.5);
-                        let A4 = new Vector2(xA - wA*0.5, yA - hA *0.5);
+        b1.x += (b1.vx * -1) * entryTime 
+        b1.y += (b1.vy * -1) * entryTime
 
-                        let B1 = new Vector2(xB - wB*0.5, yB + hB *0.5);
-                        let B2 = new Vector2(xB + wB*0.5, yB + hB *0.5);
-                        let B3 = new Vector2(xB + wB*0.5, yB - hB *0.5);
-                        let B4 = new Vector2(xB - wB*0.5, yB - hB *0.5);
-                        //console.log("colision");
+        a.pos = new Vector2(b1.x - a.col[0].offset.x + a.col[0].w * 0.5, b1.y - a.col[0].offset.y + a.col[0].h * 0.5)
+        
+        let remainingTime = 1 - entryTime
 
-                        if (A2.x >= B1.x && A2.y <= B1.y && A3.x >= B4.x && A3.y >= B4.y && xA-wA*0.5 < xB-wB*0.5) 
-                        {
-                            //console.log("izquierda")
-                            collisions[A].col.colDir.x = -1;
-                        }
-                        else if (A1.x <= B2.x && A1.y <= B2.y && A4.x <= B3.x && A4.y >= B3.y && xA+wA*0.5 > xB+wB*0.5) 
-                        {
-                            //console.log("derecha")
-                            collisions[A].col.colDir.x = 1;
-                        }
-                        else
-                        {
-                            collisions[A].col.colDir.x = 0;
-                        }
+        if(a.rb.type == "Deflect")
+        {
+            a.rb.vel.x *= remainingTime
+            a.rb.vel.y *= remainingTime
+            if (Math.abs(normalX) > 0.0001)
+            {
+                a.rb.vel.x = -a.rb.vel.x
+            }
+            if (Math.abs(normalY) > 0.0001)
+            {
+                a.rb.vel.y = -a.rb.vel.y
+            }
+        }
 
-                        if (A4.x >= B1.x && A4.y <= B1.y && A3.x <= B2.x && A3.y <= B2.y && yA+hA*0.5 > yB+hB*0.5) 
-                        {
-                            //console.log("arriba")
-                            collisions[A].col.colDir.y = 1;
-                        }
-                        else if (A1.x >= B4.x && A1.y >= B4.y && A2.x <= B3.x && A2.y >= B3.y && yA-hA*0.5 < yB-hB*0.5) 
-                        {
-                            //console.log("abajo")
-                            collisions[A].col.colDir.y = -1;
-                        }
-                        else
-                        {
-                            collisions[A].col.colDir.y = 0;
-                        }
+        if(a.rb.type == "Push")
+        {
+            let magnitude = Math.sqrt( (b1.vx * b1.vx + b1.vy * b1.vy) ) * remainingTime
+            let dotprod = b1.vx * normalY + b1.vy * normalX
+            if(dotprod > 0)
+            {
+                dotprod = 1
+            }
+            else if (dotprod < 0)
+            {
+                dotprod = -1
+            }
 
-                        collisions[A].col.isColliding = true;
-                        collisions[B].col.isColliding = true;
-                        collisions[A].col.collided = collisions[B].name;
-                        console.log(collisions[A].name + "x" + collisions[B].name);
-                        //console.log(collisions[A].col.isColliding + " " + collisions[A].col.collided);                             
-                    }
-                }
-            }            
-        }        
+            a.rb.vel.x = dotprod * normalY * magnitude
+            a.rb.vel.y = dotprod * normalX * magnitude
+        }
+
+        if(a.rb.type == "Slide")
+        {
+            let dotprod = (b1.vx * normalY + b1.vy * normalX) * remainingTime
+            a.rb.vel.x = dotprod * normalY
+            a.rb.vel.y = dotprod * normalX
+        }
     }
 }
 
-function RigidBody()
-{
+var Gravity = 10;
 
+class RigidBody
+{
+    constructor(type = "Static", x = 0, y = 0, gMult = 1)
+    {
+        this.type = type;
+        this.vel = new Vector2(x, y);
+        this.gMult = gMult;
+    }
+}
+
+function physicsUpdate() 
+{
+    for (let i = 0; i < gameObjects.length; i++) 
+    {
+        if(gameObjects[i].rb != null || gameObjects[i].rb != undefined)
+        {
+            if(gameObjects[i].rb != "Static")
+            {
+                gameObjects[i].pos.y -= Gravity * gameObjects[i].rb.gMult;
+
+                gameObjects[i].pos.x += gameObjects[i].rb.vel.x;
+                gameObjects[i].pos.y += gameObjects[i].rb.vel.y;
+            }
+        }
+    }
 }
