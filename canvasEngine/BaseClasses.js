@@ -61,7 +61,7 @@ function boxCollisions(a, b)
             A1.y < B2.y && A2.y > B1.y) 
         {
             a.col[i].isColliding = true;
-            a.col[i].collided = b.name;
+            a.col[i].collided = b;
 
             if(a.col[i].debug)
             {
@@ -89,7 +89,6 @@ function boxCollisions(a, b)
                         
             //return false;
         }
-
     }
 }
 
@@ -209,9 +208,11 @@ function SweepAABB(a, b /*, normalX, normalY*/)
 
         //return entryTime
         a.col[0].isColliding = true;
-        a.col[0].collided = b.name
+        a.col[0].collided = b
         a.col[0].colDir = new Vector2 (normalX, normalY)
-        console.log(normalX + ", " + normalY + ". EntryTime: " + entryTime + ", V: " + b1.vx + ", " + b1.vy)   
+        console.log(a.col[0].colDir.x + " " + a.col[0].colDir.y)
+        
+        //console.log(normalX + ", " + normalY + ". EntryTime: " + entryTime + ", V: " + b1.vx + ", " + b1.vy)   
 
         b1.x += (b1.vx * -1) * entryTime 
         b1.y += (b1.vy * -1) * entryTime

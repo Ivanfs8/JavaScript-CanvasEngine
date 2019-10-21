@@ -147,7 +147,8 @@ function gameUpdate()
         {
             if(a != b)
             {
-                if(gameObjects[a].rb != null && gameObjects[a].rb != undefined && gameObjects[a].rb.type != "Static")
+                if(gameObjects[a].rb != null && gameObjects[a].rb != undefined && gameObjects[a].rb.type != "Static" &&
+                gameObjects[b].rb != null && gameObjects[b].rb != undefined)
                 {
                     let box = 
                     {
@@ -166,7 +167,7 @@ function gameUpdate()
                     new BoxCollider(box.vx > 0 ? box.vx + box.w : box.w - box.vx,
                                     box.vy > 0 ? box.vy + box.h : box.h - box.vy)
                     
-                    test.col[0].debug = true
+                    //test.col[0].debug = true
                     boxCollisions(test, gameObjects[b])
                     if(test.col[0].isColliding)
                     {
@@ -188,12 +189,9 @@ function gameUpdate()
                 {                   
                     break;
                 }
-            }
-            
+            }            
         }        
-    }
-
-       
+    }       
     
     for (let i = 0; i < gameObjects.length; i++) 
     {
