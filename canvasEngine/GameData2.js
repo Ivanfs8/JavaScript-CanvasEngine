@@ -36,11 +36,11 @@ player.update = function ()
         }
     }
 
-    if(leftPressed)
+    if(Input.left.keyPressed)
     {
         this.dir.x = -1
     }
-    else if(rightPressed)
+    else if(Input.right.keyPressed)
     {
         this.dir.x = 1
     }
@@ -49,11 +49,11 @@ player.update = function ()
         this.dir.x = 0
     }
 
-    if(upPressed)
+    if(Input.up.keyDown)
     {
         this.dir.y = 1;
     }
-    else if(downPressed)
+    else if(Input.down.keyDown)
     {
         this.dir.y = -1;
     }
@@ -109,7 +109,7 @@ class door extends GameObject
     }
 }
 
-class key extends GameObject
+class qey extends GameObject
 {
     constructor(x = 0, y = 0)
     {
@@ -201,7 +201,7 @@ title.start = function()
 }
 title.update = function ()
 {
-    if(spacePressed)
+    if(Input.space.keyDown)
     {
         Destroy(this);
         gameStart(Scenes, 1);
@@ -217,17 +217,16 @@ gameOverScreen.start = function()
 }
 gameOverScreen.update = function ()
 {
-    if(spacePressed)
+    if(Input.space.keyDown)
     {
         Destroy(this);
         gameStart(Scenes, 0);        
     }
 }
 
-
 var Inicio = [title]; var GameOver = [gameOverScreen]
 var level1 = [player, new wall(-62, 0, 2, 200), new wall(62, 0, 2, 200), new wall(0, -94, 120, 2), new wall(0, 94, 120, 2), new wall(-28, -60, 60, 2), new wall(28, -40, 60, 2),
-            new wall(28, -20, 60, 2), new key(54, -30), new wall(38, 20, 40, 2), new wall(-38, 20, 40, 2), new door(0, 20, 26, 2), new point(50, -80), new point(-50, 0), 
+            new wall(28, -20, 60, 2), new qey(54, -30), new wall(38, 20, 40, 2), new wall(-38, 20, 40, 2), new door(0, 20, 26, 2), new point(50, -80), new point(-50, 0), 
             new point(-50, 80), new exit(50, 80)]
 
 var Scenes = [Inicio, level1, GameOver];

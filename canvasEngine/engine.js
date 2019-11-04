@@ -12,65 +12,57 @@ var gameObjects = [];
 var collisions = [];
 
 //controles
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("keydown", keyDown, true);
+document.addEventListener("keyup", keyUp, true);
 //document.addEventListener("mouseenter", )
 
-var rightPressed;
-var leftPressed;
-var upPressed;
-var downPressed;
-var spacePressed;
-
-function keyDownHandler(e) {
-    if(e.keyCode == 39)
+class key 
+{
+    constructor(keyCode = 0, keyDown = false, keyPressed = false, keyUp = false)
     {
-        rightPressed = true;
-    }
-    
-    if(e.keyCode == 37)
-    {
-        leftPressed = true;
-    }
-
-    if(e.keyCode == 38)
-    {
-        upPressed = true;
-    }
-
-    if(e.keyCode == 40)
-    {
-        downPressed = true;
-    }
-
-    if(e.keyCode == 32)
-    {
-        spacePressed = true;
+        this.keyCode = keyCode;
+        //this.code = code;
+        this.keyDown = keyDown;
+        this.keyPressed = keyPressed;
+        this.keyUp = keyUp;       
     }
 }
 
-function keyUpHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = false;
-    }
-    
-    if(e.keyCode == 37) {
-        leftPressed = false;
-    }
+var Input =
+{
+    left : new key(37),
+    right : new key(39),
+    up : new key (38),
+    down : new key (40),
+    space : new key (32)
+}
 
-    if(e.keyCode == 38)
+function keyDown(e)
+{
+    console.log("key" + e.keyCode)
+    for (const key in Input) 
     {
-        upPressed = false;
+        if (Input[key].keyCode == e.keyCode)
+        {
+            if(!Input[key].keyPressed)
+            {
+                Input[key].keyDown = true;
+                Input[key].keyUp = false;
+                Input[key].keyPressed = true;
+            }            
+        };
     }
+}
 
-    if(e.keyCode == 40)
-    {
-        downPressed = false;
-    }
-
-    if(e.keyCode == 32)
-    {
-        spacePressed = false;
+function keyUp(e)
+{
+    for (const key in Input) {
+        if (Input[key].keyCode == e.keyCode)
+        {
+            Input[key].keyUp = true;
+            Input[key].keyDown = false;
+            Input[key].keyPressed = false;
+        };
     }
 }
 
@@ -131,6 +123,8 @@ function gameStart(Scenes, level = 0)
 
 function gameUpdate() 
 {
+
+
     ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);
 
     for (let i = 0; i < gameObjects.length; i++) 
@@ -198,6 +192,13 @@ function gameUpdate()
         drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
         
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
+    }
+
+    
+    for (const key in Input) 
+    {        
+        Input[key].keyUp = false;
+        Input[key].keyDown = false;       
     }
 
     rID = requestAnimationFrame(gameUpdate);       
