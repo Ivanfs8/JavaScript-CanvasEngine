@@ -204,7 +204,7 @@ title.update = function ()
     if(spacePressed)
     {
         Destroy(this);
-        gameStart(Scenes, 1);        
+        gameStart(Scenes, 1);
     }
 }
 
