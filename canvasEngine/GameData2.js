@@ -49,11 +49,11 @@ player.update = function ()
         this.dir.x = 0
     }
 
-    if(Input.up.keyDown)
+    if(Input.up.keyPressed)
     {
         this.dir.y = 1;
     }
-    else if(Input.down.keyDown)
+    else if(Input.down.keyPressed)
     {
         this.dir.y = -1;
     }
