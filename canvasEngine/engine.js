@@ -97,9 +97,36 @@ function drawImage(img, x, y, width, height)
     ctx.restore();
 }
 
+function drawText(font, align, x, y, text) 
+{
+    ctx.save();
+    
+    //if(typeof width === "undefined") width = img.width;
+    //if(typeof height === "undefined") height = img.height;
+    //if(typeof center === "undefined") center = false;
+    
+    // Set rotation point to center of image, instead of top/left
+    //x -= width/2;
+    //y -= height/2;
+    
+    // Set the origin to the center of the image
+    ctx.translate(x, y);
+    ctx.scale(1, -1);
+
+    ctx.fillStyle = "red";
+    ctx.textAlign = align;
+    // Draw the image    
+    ctx.fillText(text, x, y);
+    
+    ctx.restore();
+}
+
 //game updates
 var rID = null;
 var currentLevel = 0;
+
+//test
+var Score = new TextObject("12px Arial", "center", 0, 20);
 
 function gameStart(Scenes, level = 0)
 {
@@ -194,6 +221,7 @@ function gameUpdate()
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
     }
 
+    drawText(Score.font, Score.align, Score.pos.x, Score.pos.y, Score.text);
     
     for (const key in Input) 
     {        

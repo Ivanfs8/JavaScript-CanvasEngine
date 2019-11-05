@@ -23,6 +23,8 @@ player.start = function ()
         }        
     }
 
+    Score.text = "0";
+
     this.dir = new Vector2(0,0)
 }
 player.update = function ()
@@ -148,16 +150,21 @@ class point extends GameObject
         this.w = 8;
         this.h = 8;
 
-        this.col[0] = new BoxCollider(8, 8, 0, 0);
+        
         //this.col[0].debug = true
         this.rb = null
 
+        this.start = function()
+        {
+            this.col[0] = new BoxCollider(8, 8, 0, 0);
+        }
         this.update = function()
         {
             if(this.col[0].isColliding && this.col[0].collided.name == "player")
             {
                 Destroy(this);
                 player.points += 1;
+                Score.text = player.points.toString();
             }
         }
     }

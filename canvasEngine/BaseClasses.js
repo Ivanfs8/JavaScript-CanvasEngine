@@ -296,5 +296,6 @@ class TextObject {
         this.font = font
         this.align = align
         this.pos = new Vector2(x, y)
+        this.text = "";
     }
 }
