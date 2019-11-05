@@ -21,3 +21,12 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
+
+@font-face {
+    font-family: 'Pixel-Art Regular';
+    src: url("Assets/pixelart.ttf") format('truetype');
+}
+
+p{
+    font-family: "Pixel-Art Regular";
+}

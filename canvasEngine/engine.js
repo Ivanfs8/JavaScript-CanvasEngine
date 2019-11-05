@@ -126,7 +126,7 @@ var rID = null;
 var currentLevel = 0;
 
 //test
-var Score = new TextObject("12px Arial", "center", 0, 20);
+var Score = new TextObject("20px Pixel-Art", "center", 0, 20);
 
 function gameStart(Scenes, level = 0)
 {
@@ -134,6 +134,8 @@ function gameStart(Scenes, level = 0)
     gameObjects = [];
 
     gameObjects = [...Scenes[level]];
+
+    
 
     for (let i = 0; i < gameObjects.length; i++) {
         gameObjects[i].gameObject = i;
@@ -143,15 +145,15 @@ function gameStart(Scenes, level = 0)
 
     if(rID == null)
     {
-        gameUpdate();
+        //gameUpdate();
+
+        document.fonts.load("10pt 'PixelArt'").then(gameUpdate)
     }
     //cancelAnimationFrame(rID);    
 }
 
 function gameUpdate() 
 {
-
-
     ctx.clearRect(-canvas.width*0.5, -canvas.height*0.5, canvas.width, canvas.height);
 
     for (let i = 0; i < gameObjects.length; i++) 
