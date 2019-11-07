@@ -1,6 +1,13 @@
 //sistema
 let canvas = document.getElementById("Canvas");
 let ctx = canvas.getContext('2d');
+
+// let dpi = Window.devicePixelRatio;
+// let style_height = getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);
+// let style_width = getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);
+// canvas.setAttribute('height', style_height * dpi);
+// canvas.setAttribute('width', style_width * dpi);
+
 ctx.translate(canvas.width*0.5, canvas.height*0.5);
 ctx.scale(1, -1);
 ctx.imageSmoothingEnabled = false;
@@ -97,7 +104,7 @@ function drawImage(img, x, y, width, height)
     ctx.restore();
 }
 
-function drawText(font, align, x, y, text) 
+function drawText(font, size, align, x, y, text) 
 {
     ctx.save();
     
@@ -110,11 +117,12 @@ function drawText(font, align, x, y, text)
     //y -= height/2;
     
     // Set the origin to the center of the image
-    ctx.translate(x, y);
+    ctx.translate(x, y + size/2);
     ctx.scale(1, -1);
-
+    var fontString = size + "px " + font    
+    ctx.font = fontString;
     ctx.fillStyle = "red";
-    ctx.textAlign = align;
+    ctx.textAlign = "left";
     // Draw the image    
     ctx.fillText(text, x, y);
     
@@ -126,7 +134,7 @@ var rID = null;
 var currentLevel = 0;
 
 //test
-var Score = new TextObject("20px Pixel-Art", "center", 0, 20);
+var Score = new TextObject("Squarebit", 1,"center", 0, 20);
 
 function gameStart(Scenes, level = 0)
 {
@@ -145,9 +153,9 @@ function gameStart(Scenes, level = 0)
 
     if(rID == null)
     {
-        //gameUpdate();
+        gameUpdate();
 
-        document.fonts.load("10pt 'PixelArt'").then(gameUpdate)
+        //document.fonts.load("400pt Squarebit").then(gameUpdate)
     }
     //cancelAnimationFrame(rID);    
 }
@@ -223,7 +231,7 @@ function gameUpdate()
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
     }
 
-    drawText(Score.font, Score.align, Score.pos.x, Score.pos.y, Score.text);
+    drawText(Score.font, Score.size, Score.align, Score.pos.x, Score.pos.y, Score.text);
     
     for (const key in Input) 
     {        

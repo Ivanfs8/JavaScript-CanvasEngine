@@ -291,11 +291,13 @@ function physicsUpdate()
 }
 
 class TextObject {
-    constructor(font = "12px Arial", align = "left", x = 0, y = 0)
+    constructor(font = "Arial", size = 1, align = "left", x = 0, y = 0)
     {
         this.font = font
+        this.size = 8*size
         this.align = align
         this.pos = new Vector2(x, y)
         this.text = "";
+
     }
 }

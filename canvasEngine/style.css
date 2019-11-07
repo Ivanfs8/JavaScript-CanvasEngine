@@ -23,10 +23,11 @@ canvas {
 }
 
 @font-face {
-    font-family: 'Pixel-Art Regular';
-    src: url("Assets/pixelart.ttf") format('truetype');
+    font-family: 'Squarebit';
+    -webkit-font-smoothing: none;
+    src: url(Assets/Squarebit.ttf) format('truetype');
 }
 
 p{
-    font-family: "Pixel-Art Regular";
+    font-family: "Squarebit";
 }
