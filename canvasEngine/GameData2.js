@@ -149,7 +149,6 @@ class point extends GameObject
         this.pos.y = y;
         this.w = 8;
         this.h = 8;
-
         
         //this.col[0].debug = true
         this.rb = null
@@ -238,4 +237,4 @@ var level1 = [player, new wall(-62, 0, 2, 200), new wall(62, 0, 2, 200), new wal
 
 var Scenes = [Inicio, level1, GameOver];
 
-window.onload = gameStart(Scenes, 0);
+/* window.onload = */gameStart(Scenes, 0);

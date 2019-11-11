@@ -14,9 +14,10 @@ ctx.imageSmoothingEnabled = false;
 ctx.save();
 
 var gameObjects = [];
+var UserInterface = [];
 
 //fisicas y colisiones
-var collisions = [];
+//var collisions = [];
 
 //controles
 document.addEventListener("keydown", keyDown, true);
@@ -46,7 +47,7 @@ var Input =
 
 function keyDown(e)
 {
-    console.log("key" + e.keyCode)
+    //console.log("key" + e.keyCode)
     for (const key in Input) 
     {
         if (Input[key].keyCode == e.keyCode)
@@ -117,12 +118,12 @@ function drawText(font, size, align, x, y, text)
     //y -= height/2;
     
     // Set the origin to the center of the image
-    ctx.translate(x, y + size/2);
+    //ctx.translate(x-0.5, y + size/2);
     ctx.scale(1, -1);
     var fontString = size + "px " + font    
     ctx.font = fontString;
     ctx.fillStyle = "red";
-    ctx.textAlign = "left";
+    ctx.textAlign = align;
     // Draw the image    
     ctx.fillText(text, x, y);
     
@@ -132,18 +133,17 @@ function drawText(font, size, align, x, y, text)
 //game updates
 var rID = null;
 var currentLevel = 0;
+var lastGO_ID = 0
 
 //test
-var Score = new TextObject("Squarebit", 1,"center", 0, 20);
+var Score = new TextObject("Squarebit", 2,"center", 0, 20);
 
 function gameStart(Scenes, level = 0)
 {
     currentLevel = level;
     gameObjects = [];
 
-    gameObjects = [...Scenes[level]];
-
-    
+    gameObjects = [...Scenes[level]];    
 
     for (let i = 0; i < gameObjects.length; i++) {
         gameObjects[i].gameObject = i;
@@ -151,11 +151,17 @@ function gameStart(Scenes, level = 0)
         gameObjects[i].start();
     };
 
+    lastGO_ID = gameObjects.length;
+
     if(rID == null)
     {
-        gameUpdate();
+        //gameUpdate();
+        ctx.font = "32px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";   
+        ctx.fillText("Loading", 0, 0);        
 
-        //document.fonts.load("400pt Squarebit").then(gameUpdate)
+        window.onload = gameUpdate()
     }
     //cancelAnimationFrame(rID);    
 }

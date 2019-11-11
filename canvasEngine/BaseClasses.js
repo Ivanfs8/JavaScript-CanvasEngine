@@ -33,6 +33,13 @@ function Destroy(toDestroy){
     //gameObjects.slice(toRemove, 1);
 };
 
+function Create(toCreate){
+    lastGO_ID += 1;
+    toCreate.gameObject = lastGO_ID;
+    gameObjects.push(toCreate);
+    gameObjects[gameObjects.length-1].start();
+}
+
 class BoxCollider {
     constructor(w, h, x = 0, y = 0) {
         this.w = w;
@@ -277,16 +284,25 @@ function physicsUpdate()
 {
     for (let i = 0; i < gameObjects.length; i++) 
     {
-        if(gameObjects[i].rb != null || gameObjects[i].rb != undefined)
+        if(gameObjects[i].rb != null && gameObjects[i].rb != undefined)
         {
-            if(gameObjects[i].rb != "Static")
+            //if(gameObjects[i].rb.type != "Static")
             {
-                gameObjects[i].pos.y -= Gravity * gameObjects[i].rb.gMult;
+                //gameObjects[i].pos.y -= Gravity * gameObjects[i].rb.gMult;
 
                 gameObjects[i].pos.x += gameObjects[i].rb.vel.x;
                 gameObjects[i].pos.y += gameObjects[i].rb.vel.y;
             }
         }
+    }
+}
+
+class Scene
+{
+    constructor(gameObjects = [], userinterface = [])
+    {
+        this.gameObjects = gameObjects
+        this.userinterface = userinterface
     }
 }
 

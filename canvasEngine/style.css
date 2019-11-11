@@ -14,7 +14,7 @@ body {
 
 canvas {
     background: rgb(21, 27, 56); display: block; margin: 0 auto;
-    width: 512px;
+    width: 768px;
     height: ‭768‬px;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
