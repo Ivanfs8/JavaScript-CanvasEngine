@@ -1,4 +1,25 @@
 const delay = ms => new Promise(res => setTimeout(res, ms));
+// Usage:
+//const yourFunction = async (param) => {
+//     await delay(5000);
+//     console.log("Waited 5s");
+  
+//     await delay(5000);
+//     console.log("Waited an additional 5s");
+// };
+
+function getRandomIntInclusive(min, max) 
+{
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+function getRandomFloatInclusive(min, max, decimal = 1)
+{
+    let out = (Math.random() * (max - min + 1)) + min;
+    return out.toFixed(decimal)
+}
 
 class Vector2 
 {
@@ -10,10 +31,13 @@ class Vector2
 }
 
 class GameObject {
-    constructor(name = "GameObject", src) {
+    constructor(name = "GameObject", src = null) {
         this.gameObject = 0;
         this.sprite = new Image();
-        this.sprite.src = src;
+        if(src != null)
+        {
+            this.sprite.src = src;
+        }        
         this.pos = new Vector2(0, 0);
         this.name = name;
         this.w = this.sprite.width;

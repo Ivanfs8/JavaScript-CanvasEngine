@@ -159,7 +159,7 @@ function gameStart(Scenes, level = 0)
         ctx.font = "32px Arial";
         ctx.fillStyle = "red";
         ctx.textAlign = "center";   
-        ctx.fillText("Loading", 0, 0);        
+        ctx.fillText("Loading", 0, 0);
 
         window.onload = gameUpdate()
     }
@@ -182,7 +182,7 @@ function gameUpdate()
     {
         for (let b = 0; b < gameObjects.length; b++) 
         {
-            if(a != b)
+            if(a != b && gameObjects[a].col != null && gameObjects[b].col != null)
             {
                 if(gameObjects[a].rb != null && gameObjects[a].rb != undefined && gameObjects[a].rb.type != "Static" &&
                 gameObjects[b].rb != null && gameObjects[b].rb != undefined)
@@ -232,7 +232,10 @@ function gameUpdate()
     
     for (let i = 0; i < gameObjects.length; i++) 
     {
-        drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
+        if(gameObjects[i].sprite != null && gameObjects[i].sprite != undefined && gameObjects[i].sprite.src != null && gameObjects[i].sprite.src != undefined)
+        {
+            drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
+        }       
         
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
     }
