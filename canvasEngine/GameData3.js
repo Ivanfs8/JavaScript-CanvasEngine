@@ -1,6 +1,8 @@
 const xLimit = canvas.width*0.5;
 const yLimit = canvas.height*0.5;
 
+var play = false
+
 var gm = new GameObject("gm", null)
 gm.start = function()
 {
@@ -11,10 +13,22 @@ gm.start = function()
     this.rb = null
     this.col = null
 
+    play = true
     this.spawnDelay = getRandomFloatInclusive(1,3)
     this.xCord = getRandomIntInclusive(-xLimit, xLimit)
     console.log(this.spawnDelay)
     Spawn(this.spawnDelay)
+}
+
+gm.update = function()
+{
+    Score.text = gm.Score.toString();
+    Lives.text = Player.lives
+    if(gm.Score >= 800)
+    {
+        play = false
+        gameStart(Scenes, 2)
+    }
 }
 
 const Spawn = async (sec) => 
@@ -24,9 +38,13 @@ const Spawn = async (sec) =>
 
     Create(new Asteroid(gm.xCord, yLimit + 10))
     
-    await delay(sec * 1000);
-    console.log(gm.spawnDelay)
-    Spawn(gm.spawnDelay)
+    if(play)
+    {
+        await delay(sec * 1000);
+        console.log(gm.spawnDelay)
+        Spawn(gm.spawnDelay)
+    }else{console.log("ended")}
+    
 }
 
 var Player = new GameObject("Player", "Assets/Ship.png")
@@ -42,18 +60,25 @@ Player.start = function()
 
     this.rb = new RigidBody("Static", 0, 0, 0);
     this.col[0] = new BoxCollider(18, 13);
-    this.col[0].debug = true
+    //this.col[0].debug = true
 
     this.canShoot = true
+
+    this.lives = 3
 }
 
 Player.update = function()
 {
-    if(Input.left.keyPressed)
+    if(this.lives <= 0)
+    {
+        gameStart(Scenes, 3)
+    }
+
+    if(Input.left.keyPressed && this.pos.x > -xLimit)
     {
         this.dir.x = -1;
     }
-    else if(Input.right.keyPressed)
+    else if(Input.right.keyPressed && this.pos.x < xLimit)
     {
         this.dir.x = 1;
     }
@@ -62,11 +87,11 @@ Player.update = function()
         this.dir.x = 0;
     }
 
-    if(Input.down.keyPressed)
+    if(Input.down.keyPressed && this.pos.y > -yLimit)
     {
         this.dir.y = -1;
     }
-    else if(Input.up.keyPressed)
+    else if(Input.up.keyPressed && this.pos.y < yLimit)
     {
         this.dir.y = 1;
     }
@@ -107,7 +132,7 @@ class Bullet extends GameObject{
         this.start = function()
         {
             this.col[0] = new BoxCollider(2, 10);
-            this.col[0].debug = true
+            //this.col[0].debug = true
         }
 
         this.update = function()
@@ -140,12 +165,12 @@ class Asteroid extends GameObject{
         {
             this.health = 3
             this.col[0] = new BoxCollider(28,21)
-            this.col[0].debug = true         
+            //this.col[0].debug = true         
         }
 
         this.update = function()
         {            
-            if(this.col[0].isColliding && (this.col[0].collided.name == "Bullet"))
+            if(this.col[0].isColliding && (this.col[0].collided.name == "Bullet" || this.col[0].collided.name == "Asteroid"))
             {
                 this.health -= 1;
             }
@@ -153,11 +178,13 @@ class Asteroid extends GameObject{
             if(this.col[0].isColliding && (this.col[0].collided.name == "Player"))
             {
                 Destroy(this);
+                Player.lives -= 1
             }
 
             if(this.health <= 0)
             {
-                Create(new Mineral(this.pos.x, this.pos.y, 2))
+                let chance = getRandomIntInclusive(1, 3)
+                Create(new Mineral(this.pos.x, this.pos.y, chance))
                 Destroy(this);
             }
 
@@ -209,13 +236,79 @@ class Mineral extends GameObject{
         {
             if(this.col[0].isColliding && this.col[0].collided.name == "Player")
             {
-
+                Destroy(this)
+                gm.Score += this.value
             }
         }
 
     }
 }
 
+var titleScreen = new GameObject("Title", "Assets/Start.png");
+titleScreen.start = function()
+{
+    titleScreen.w = 36*2;
+    titleScreen.h = 40*2;
+    titleScreen.rb = null
+
+    Score.text = ""
+    Lives.text = ""
+    play = false
+}
+titleScreen.update = function ()
+{
+    if(Input.space.keyDown)
+    {
+        Destroy(this);
+        gameStart(Scenes, 1);
+    }
+}
+
+var victoryScreen = new GameObject("Victory", "Assets/Victory.png")
+victoryScreen.start = function()
+{
+    this.w = 42*2
+    this.h = 40*2
+    this.rb = null
+    play = false
+    Score.text = ""
+    Lives.text = ""
+}
+victoryScreen.update = function ()
+{
+    if(Input.space.keyDown)
+    {
+        Destroy(this);
+        gameStart(Scenes, 0);        
+    }
+}
+
+var gameOverScreen = new GameObject("GameOver", "Assets/GameOver.png");
+gameOverScreen.start = function()
+{
+    gameOverScreen.w = 19*2;
+    gameOverScreen.h = 30*2;
+    this.rb = null
+    play = false
+}
+gameOverScreen.update = function ()
+{
+    if(Input.space.keyDown)
+    {
+        Destroy(this);
+        gameStart(Scenes, 0);        
+    }
+}
+
+var Title = [titleScreen]
 var level1 = [gm, Player];
-var Scenes = [level1];
+var Victory = [victoryScreen];
+var GameOver = [gameOverScreen]
+
+var Scenes = [Title, level1, Victory, GameOver];
+
+var Score = new TextObject("Squarebit", 2,"right", 90, -80, "white");
+var Lives = new TextObject("Squarebit", 2,"left", -90, -80, "red");
+var Canvas = [Score, Lives]
+UserInterface = Canvas
 gameStart(Scenes, 0);

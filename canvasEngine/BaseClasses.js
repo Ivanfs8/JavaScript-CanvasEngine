@@ -331,13 +331,13 @@ class Scene
 }
 
 class TextObject {
-    constructor(font = "Arial", size = 1, align = "left", x = 0, y = 0)
+    constructor(font = "Arial", size = 1, align = "left", x = 0, y = 0, color = "black")
     {
         this.font = font
         this.size = 8*size
         this.align = align
         this.pos = new Vector2(x, y)
+        this.color = color
         this.text = "";
-
     }
 }

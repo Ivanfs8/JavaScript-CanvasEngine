@@ -105,7 +105,7 @@ function drawImage(img, x, y, width, height)
     ctx.restore();
 }
 
-function drawText(font, size, align, x, y, text) 
+function drawText(font, size, align, x, y, text, color = "black") 
 {
     ctx.save();
     
@@ -122,7 +122,7 @@ function drawText(font, size, align, x, y, text)
     ctx.scale(1, -1);
     var fontString = size + "px " + font    
     ctx.font = fontString;
-    ctx.fillStyle = "red";
+    ctx.fillStyle = color;
     ctx.textAlign = align;
     // Draw the image    
     ctx.fillText(text, x, y);
@@ -136,7 +136,7 @@ var currentLevel = 0;
 var lastGO_ID = 0
 
 //test
-var Score = new TextObject("Squarebit", 2,"center", 0, 20);
+
 
 function gameStart(Scenes, level = 0)
 {
@@ -157,7 +157,7 @@ function gameStart(Scenes, level = 0)
     {
         //gameUpdate();
         ctx.font = "32px Arial";
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "white";
         ctx.textAlign = "center";   
         ctx.fillText("Loading", 0, 0);
 
@@ -240,7 +240,10 @@ function gameUpdate()
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
     }
 
-    drawText(Score.font, Score.size, Score.align, Score.pos.x, Score.pos.y, Score.text);
+    for (let i = 0; i < UserInterface.length; i++) 
+    {
+        drawText(UserInterface[i].font, UserInterface[i].size, UserInterface[i].align, UserInterface[i].pos.x, UserInterface[i].pos.y, UserInterface[i].text, UserInterface[i].color);        
+    }    
     
     for (const key in Input) 
     {        
