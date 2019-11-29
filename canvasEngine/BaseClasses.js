@@ -28,6 +28,14 @@ class Vector2
         this.x = x;
         this.y = y;
     }
+
+    // Distance(Vector2 = new Vector2())
+    // {        
+    //     let dx = Vector2.x - this.x;
+    //     let dy = Vector2.y - this.y;
+        
+    //     return Math.sqrt(dx*dx+dy*dy);
+    // }
 }
 
 class GameObject {
@@ -37,7 +45,13 @@ class GameObject {
         if(src != null)
         {
             this.sprite.src = src;
-        }        
+        }
+        this.spriteMods = {
+            hue: null, //(0-100)
+            saturation: null, //(0-400)
+            luminosity: null, //(0-100)
+        }
+        
         this.pos = new Vector2(0, 0);
         this.name = name;
         this.w = this.sprite.width;

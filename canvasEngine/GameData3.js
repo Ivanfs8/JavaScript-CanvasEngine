@@ -1,9 +1,10 @@
 const xLimit = canvas.width*0.5;
 const yLimit = canvas.height*0.5;
 
-var play = false
+var globalRepeatIndex = 0
 
 var gm = new GameObject("gm", null)
+gm.play = false
 gm.start = function()
 {
     if(currentLevel == 1)
@@ -13,11 +14,11 @@ gm.start = function()
     this.rb = null
     this.col = null
 
-    play = true
+    this.play = true
     this.spawnDelay = getRandomFloatInclusive(1,3)
     this.xCord = getRandomIntInclusive(-xLimit, xLimit)
     console.log(this.spawnDelay)
-    Spawn(this.spawnDelay)
+    gm.Spawn(this.spawnDelay)
 }
 
 gm.update = function()
@@ -26,25 +27,39 @@ gm.update = function()
     Lives.text = Player.lives
     if(gm.Score >= 800)
     {
-        play = false
+        this.play = false
         gameStart(Scenes, 2)
     }
 }
 
-const Spawn = async (sec) => 
+gm.GameOver = function ()
 {
-    gm.spawnDelay = getRandomFloatInclusive(2,3)
-    gm.xCord = getRandomIntInclusive(-xLimit, xLimit)
+    this.play = false
+    gameStart(Scenes, Scenes.length-1)
+    globalRepeatIndex++
+}
 
-    Create(new Asteroid(gm.xCord, yLimit + 10))
-    
-    if(play)
-    {
+gm.Spawn = async (sec) => 
+{   
+    let level = currentLevel
+    let localRepeatIndex = globalRepeatIndex
+    if(gm.play && currentLevel == level && globalRepeatIndex == localRepeatIndex)
+    {   
         await delay(sec * 1000);
-        console.log(gm.spawnDelay)
-        Spawn(gm.spawnDelay)
-    }else{console.log("ended")}
-    
+        if(gm.play && currentLevel == level && globalRepeatIndex == localRepeatIndex)
+        {
+            gm.spawnDelay = getRandomFloatInclusive(2,3)
+            gm.xCord = getRandomIntInclusive(-xLimit, xLimit)
+            console.log(gm.spawnDelay)
+            Create(new Asteroid(gm.xCord, yLimit + 10, getRandomIntInclusive(1,3), 0 ) )
+            gm.Spawn(gm.spawnDelay)
+        }else{return}
+    }
+    else
+    {
+        console.log("ended")
+        return
+    }    
 }
 
 var Player = new GameObject("Player", "Assets/Ship.png")
@@ -71,7 +86,7 @@ Player.update = function()
 {
     if(this.lives <= 0)
     {
-        gameStart(Scenes, 3)
+        gm.GameOver()
     }
 
     if(Input.left.keyPressed && this.pos.x > -xLimit)
@@ -105,7 +120,7 @@ Player.update = function()
         this.canShoot = false;
         Create(new Bullet(Player.pos.x, Player.pos.y + 10))
 
-        this.shootDelay(0.15);
+        this.shootDelay(0.15);        
     }
 
     this.rb.vel = new Vector2(this.dir.x * this.Speed.x, this.dir.y * this.Speed.y);
@@ -151,20 +166,47 @@ class Bullet extends GameObject{
 }
 
 class Asteroid extends GameObject{
-    constructor(x = 0, y = 0)
+    constructor(x = 0, y = 0, size = 3, dir = 0) //falta size and direction
     {super("Asteroid", "Assets/Asteroid.png")
         this.pos.x = x;
         this.pos.y = y;
+        
+        this.size = size
+        this.dir = dir
 
-        this.w = 28
-        this.h = 21
+        this.spriteBig = ["Assets/Asteroid.png", "Assets/AsteroidBreak1.png", "Assets/AsteroidBreak2.png"]
+        this.spriteMed = ["Assets/AsteroidM.png", "Assets/AsteroidMBreak.png"]
+        this.spriteSma = "Assets/AsteroidS.png"
 
-        this.rb = new RigidBody("Static", 0, -1, 0)
+        switch (size) 
+        {
+            case 3:
+                this.sprite.src = this.spriteBig[0]
+                this.w = 28
+                this.h = 21
+                this.speed = 1
+                break;
+            case 2:
+                this.sprite.src = this.spriteMed[0]
+                this.w = 15
+                this.h = 17
+                this.speed = 2
+                break;
+            case 1:
+                this.sprite.src = this.spriteSma
+                this.w = 8
+                this.h = 8
+                this.speed = 2
+                break;        
+            default:
+                break;
+        }        
 
         this.start = function()
         {
-            this.health = 3
-            this.col[0] = new BoxCollider(28,21)
+            this.health = this.size
+            this.rb = new RigidBody("Static", this.dir, -1 * this.speed, 0)
+            this.col[0] = new BoxCollider(this.w,this.h)
             //this.col[0].debug = true         
         }
 
@@ -172,26 +214,63 @@ class Asteroid extends GameObject{
         {            
             if(this.col[0].isColliding && (this.col[0].collided.name == "Bullet" || this.col[0].collided.name == "Asteroid"))
             {
+                this.tookDamageAnim(0.05)
+                
+                if(this.size != 1)
+                {
+                    var chance = getRandomIntInclusive (1,10)
+                    if(chance < 4 - this.health)
+                    {
+                        Destroy(this);
+                        Create(new Asteroid(this.pos.x-5, this.pos.y, this.size-1, -1))
+                        Create(new Asteroid(this.pos.x+5, this.pos.y, this.size-1, 1))
+                        return
+                    }
+                }
+
                 this.health -= 1;
+                if(this.health <= 0)
+                {
+                    //let chance = getRandomIntInclusive(1, 3)
+                    Create(new Mineral(this.pos.x, this.pos.y, this.size))
+                    Destroy(this);                                        
+                }
+                else 
+                {
+                    switch (size) 
+                    {
+                        case 3:
+                            if(this.health == 2)
+                                {this.sprite.src = this.spriteBig[1]}
+                            else
+                                {this.sprite.src = this.spriteBig[2]}
+                            break;
+                        case 2:
+                            this.sprite.src = this.spriteMed[1]                            
+                            break;                              
+                        default:
+                            break;
+                    }
+                }               
             }
 
             if(this.col[0].isColliding && (this.col[0].collided.name == "Player"))
             {
                 Destroy(this);
                 Player.lives -= 1
-            }
-
-            if(this.health <= 0)
-            {
-                let chance = getRandomIntInclusive(1, 3)
-                Create(new Mineral(this.pos.x, this.pos.y, chance))
-                Destroy(this);
-            }
+            }            
 
             if(this.pos.y < -canvas.height*0.6)
             {
                 Destroy(this)
             }
+        }
+
+        this.tookDamageAnim = async (sec) => 
+        {
+            this.spriteMods.luminosity = 200;
+            await delay(sec * 1000);
+            this.spriteMods.luminosity = null;
         }
     }
 }
@@ -203,7 +282,7 @@ class Mineral extends GameObject{
         
         this.start = function()
         {
-            if(type == 1)
+            if(type == 3)
             {
                 this.sprite.src = "Assets/RedMin.png"
                 this.w = 8
@@ -221,7 +300,7 @@ class Mineral extends GameObject{
                 this.col[0] = new BoxCollider(7,7)
                 this.value = 50
             }
-            else if(type == 3)
+            else if(type == 1)
             {
                 this.sprite.src = "Assets/SkyMin.png"
                 this.w = 7

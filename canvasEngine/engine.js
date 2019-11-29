@@ -47,6 +47,11 @@ var Input =
 
 function keyDown(e)
 {
+    if(e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)
+    {
+        e.view.event.preventDefault();
+    }
+    
     //console.log("key" + e.keyCode)
     for (const key in Input) 
     {
@@ -75,7 +80,7 @@ function keyUp(e)
 }
 
 //render images
-function drawImage(img, x, y, width, height) 
+function drawImage(img, x, y, width, height, mods) 
 {
     ctx.save();
     
@@ -97,8 +102,14 @@ function drawImage(img, x, y, width, height)
     // Flip/flop the canvas
     //if(flip) flipScale = -1; else flipScale = 1;
     //if(flop) flopScale = -1; else flopScale = 1;
-    ctx.scale(1, -1);
+    ctx.scale(1, -1);    
     
+    //HSL
+    if(mods.hue != null || mods.saturation != null || mods.luminosity != null)
+    {
+        ctx.filter = "brightness("+ (100+mods.luminosity) +"%)"
+    }else{ctx.filter = "none"}
+
     // Draw the image    
     ctx.drawImage(img, -width/2, -height/2, width, height);
     
@@ -134,9 +145,6 @@ function drawText(font, size, align, x, y, text, color = "black")
 var rID = null;
 var currentLevel = 0;
 var lastGO_ID = 0
-
-//test
-
 
 function gameStart(Scenes, level = 0)
 {
@@ -234,7 +242,7 @@ function gameUpdate()
     {
         if(gameObjects[i].sprite != null && gameObjects[i].sprite != undefined && gameObjects[i].sprite.src != null && gameObjects[i].sprite.src != undefined)
         {
-            drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h)
+            drawImage(gameObjects[i].sprite, gameObjects[i].pos.x, gameObjects[i].pos.y, gameObjects[i].w, gameObjects[i].h, gameObjects[i].spriteMods);
         }       
         
         //ctx.drawImage(gameObjects[i].sprite, gameObjects[i].pos.x - gameObjects[i].w*0.5, gameObjects[i].pos.y + gameObjects[i].h*0.5, gameObjects[i].w, -gameObjects[i].h);                        
