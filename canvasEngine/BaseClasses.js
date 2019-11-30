@@ -17,7 +17,7 @@ function getRandomIntInclusive(min, max)
 
 function getRandomFloatInclusive(min, max, decimal = 1)
 {
-    let out = (Math.random() * (max - min + 1)) + min;
+    let out = (Math.random() * (max - min)) + min;
     return out.toFixed(decimal)
 }
 
@@ -29,13 +29,13 @@ class Vector2
         this.y = y;
     }
 
-    // Distance(Vector2 = new Vector2())
-    // {        
-    //     let dx = Vector2.x - this.x;
-    //     let dy = Vector2.y - this.y;
+    Distance = function(Vector2 = new Vector2())
+    {        
+        let dx = Vector2.x - this.x;
+        let dy = Vector2.y - this.y;
         
-    //     return Math.sqrt(dx*dx+dy*dy);
-    // }
+        return Math.sqrt(dx*dx+dy*dy);
+    }
 }
 
 class GameObject {
@@ -89,6 +89,7 @@ class BoxCollider {
         this.collided = "";
         this.colDir = new Vector2(0, 0);
         this.debug = false;
+        this.ignore = [null]
     }
 }
 
@@ -96,6 +97,19 @@ function boxCollisions(a, b)
 {
     for (let i = 0; i < a.col.length; i++) 
     {
+        if(a.col[i].ignore[0] != null)
+        {
+            for (let j = 0; j < a.col[i].ignore.length; j++) 
+            {
+                if(a.col[i].ignore[j] == b.name)
+                {
+                    return
+                }
+            
+            }
+        }
+        
+
         let A1 = new Vector2( (a.pos.x + a.col[i].offset.x) - a.col[i].w * 0.5, (a.pos.y + a.col[i].offset.y) - a.col[i].h * 0.5);
         let A2 = new Vector2( (a.pos.x + a.col[i].offset.x) + a.col[i].w * 0.5, (a.pos.y + a.col[i].offset.y) + a.col[i].h * 0.5);
 

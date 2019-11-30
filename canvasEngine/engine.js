@@ -9,7 +9,7 @@ let ctx = canvas.getContext('2d');
 // canvas.setAttribute('width', style_width * dpi);
 
 ctx.translate(canvas.width*0.5, canvas.height*0.5);
-ctx.scale(1, -1);
+ctx.scale(2, -2);
 ctx.imageSmoothingEnabled = false;
 ctx.save();
 

@@ -1,7 +1,34 @@
-const xLimit = canvas.width*0.5;
-const yLimit = canvas.height*0.5;
+const xLimit = canvas.width*0.5-105;
+const yLimit = canvas.height*0.5-100;
 
 var globalRepeatIndex = 0
+
+class Dificulty{
+    constructor(min = 2, max = 3, minQ = 1, maxQ = 1, maxScore = 300)
+    {
+        this.minSpawn = min
+        this.maxSpawn = max
+        this.minQuantity = minQ
+        this.maxQuantity = maxQ
+        this.ScoreObjective = maxScore
+    }
+}
+
+var LevelDificulty = 
+[
+    new Dificulty(1.8, 2.5, 1, 1, 100),
+    new Dificulty(1.6, 2.2, 1, 1, 250),
+    new Dificulty(1.5, 2, 1, 2, 500),
+    new Dificulty(1.2, 1.8, 1, 2, 800),
+    new Dificulty(1, 1.8, 1, 3, 1200),
+    new Dificulty(1, 1.5, 1, 3, 1800),
+    new Dificulty(1, 1.5, 2, 3, 2400),
+    new Dificulty(1, 1.2, 2, 3, 3000),
+    new Dificulty(0.8, 1.2, 2, 4, 3400),
+    new Dificulty(0.5, 1, 2, 4, 4000),
+]
+
+var levelIndex = 0
 
 var gm = new GameObject("gm", null)
 gm.play = false
@@ -15,9 +42,10 @@ gm.start = function()
     this.col = null
 
     this.play = true
-    this.spawnDelay = getRandomFloatInclusive(1,3)
+    this.spawnDelay = getRandomFloatInclusive(LevelDificulty[levelIndex].minSpawn, LevelDificulty[levelIndex].maxSpawn)
     this.xCord = getRandomIntInclusive(-xLimit, xLimit)
-    console.log(this.spawnDelay)
+    this.spawnQuantity = getRandomIntInclusive(LevelDificulty[levelIndex].minQuantity, LevelDificulty[levelIndex].maxQuantity)
+    console.log(this.spawnDelay + "\n" + this.spawnQuantity)
     gm.Spawn(this.spawnDelay)
 }
 
@@ -25,16 +53,24 @@ gm.update = function()
 {
     Score.text = gm.Score.toString();
     Lives.text = Player.lives
-    if(gm.Score >= 800)
-    {
-        this.play = false
-        gameStart(Scenes, 2)
+    if(gm.Score >= LevelDificulty[levelIndex].ScoreObjective)
+    {        
+        //this.play = false
+        levelIndex++
+        console.log("level up to " + (levelIndex+1))
+        
+        if(levelIndex > LevelDificulty.length -1)
+        {
+            levelIndex = 0
+            gameStart(Scenes, 2)
+        }
     }
 }
 
 gm.GameOver = function ()
 {
-    this.play = false
+    gm.play = false
+    levelIndex = 0
     gameStart(Scenes, Scenes.length-1)
     globalRepeatIndex++
 }
@@ -48,12 +84,20 @@ gm.Spawn = async (sec) =>
         await delay(sec * 1000);
         if(gm.play && currentLevel == level && globalRepeatIndex == localRepeatIndex)
         {
-            gm.spawnDelay = getRandomFloatInclusive(2,3)
-            gm.xCord = getRandomIntInclusive(-xLimit, xLimit)
-            console.log(gm.spawnDelay)
-            Create(new Asteroid(gm.xCord, yLimit + 10, getRandomIntInclusive(1,3), 0 ) )
+            gm.spawnDelay = getRandomFloatInclusive(LevelDificulty[levelIndex].minSpawn, LevelDificulty[levelIndex].maxSpawn)            
+            gm.spawnQuantity = getRandomIntInclusive(LevelDificulty[levelIndex].minQuantity, LevelDificulty[levelIndex].maxQuantity)
+
+            console.log(gm.spawnDelay + "\n" + gm.spawnQuantity)
+            
+            for (let i = 0; i < gm.spawnQuantity; i++) 
+            {
+                gm.xCord = getRandomIntInclusive(-xLimit, xLimit)            
+                Create(new Asteroid(gm.xCord, yLimit + 10, getRandomIntInclusive(1,3), 0 ) )                
+            }            
+            
             gm.Spawn(gm.spawnDelay)
-        }else{return}
+        }
+        else{return}
     }
     else
     {
@@ -207,6 +251,7 @@ class Asteroid extends GameObject{
             this.health = this.size
             this.rb = new RigidBody("Static", this.dir, -1 * this.speed, 0)
             this.col[0] = new BoxCollider(this.w,this.h)
+            this.col[0].ignore = ["Mineral", "Asteroid"]
             //this.col[0].debug = true         
         }
 
@@ -282,32 +327,34 @@ class Mineral extends GameObject{
         
         this.start = function()
         {
-            if(type == 3)
+            switch (type) 
             {
-                this.sprite.src = "Assets/RedMin.png"
-                this.w = 8
-                this.h = 10
-                this.rb = new RigidBody("Static", 0, -1, 0)
-                this.col[0] = new BoxCollider(8,10)
-                this.value = 10
-            }
-            else if(type == 2)
-            {
-                this.sprite.src = "Assets/GreenMin.png"
-                this.w = 7
-                this.h = 7
-                this.rb = new RigidBody("Static", 0, -2, 0)
-                this.col[0] = new BoxCollider(7,7)
-                this.value = 50
-            }
-            else if(type == 1)
-            {
-                this.sprite.src = "Assets/SkyMin.png"
-                this.w = 7
-                this.h = 7
-                this.rb = new RigidBody("Static", 0, -3, 0)
-                this.col[0] = new BoxCollider(7,7)
-                this.value = 100
+                case 3:
+                    this.sprite.src = "Assets/RedMin.png"
+                    this.w = 8
+                    this.h = 10
+                    this.rb = new RigidBody("Static", 0, -1, 0)
+                    this.col[0] = new BoxCollider(8,10)
+                    this.value = 25
+                    break;
+                case 2:
+                    this.sprite.src = "Assets/GreenMin.png"
+                    this.w = 7
+                    this.h = 7
+                    this.rb = new RigidBody("Static", 0, -2, 0)
+                    this.col[0] = new BoxCollider(7,7)
+                    this.value = 50
+                    break;
+                case 1:
+                    this.sprite.src = "Assets/SkyMin.png"
+                    this.w = 7
+                    this.h = 7
+                    this.rb = new RigidBody("Static", 0, -3, 0)
+                    this.col[0] = new BoxCollider(7,7)
+                    this.value = 100
+                    break;
+                default:
+                    break;
             }
         }
 
