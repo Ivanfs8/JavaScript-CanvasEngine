@@ -17,15 +17,15 @@ class Dificulty{
 var LevelDificulty = 
 [
     new Dificulty(1.8, 2.5, 1, 1, 100),
-    new Dificulty(1.6, 2.2, 1, 1, 250),
-    new Dificulty(1.5, 2, 1, 2, 500),
-    new Dificulty(1.2, 1.8, 1, 2, 800),
-    new Dificulty(1, 1.8, 1, 3, 1200),
-    new Dificulty(1, 1.5, 1, 3, 1800),
-    new Dificulty(1, 1.5, 2, 3, 2400),
-    new Dificulty(1, 1.2, 2, 3, 3000),
-    new Dificulty(0.8, 1.2, 2, 4, 3400),
-    new Dificulty(0.5, 1, 2, 4, 4000),
+    new Dificulty(1.6, 2.2, 1, 2, 300),
+    new Dificulty(1.4, 2, 1, 2, 550),
+    new Dificulty(1.2, 1.8, 1, 2, 1000),
+    new Dificulty(1, 1.6, 1, 3, 1325),
+    new Dificulty(1, 1.4, 1, 3, 1900),
+    new Dificulty(1, 1.4, 2, 3, 2350),
+    new Dificulty(1, 1.2, 2, 3, 3025),
+    new Dificulty(0.8, 1.2, 2, 4, 3550),
+    new Dificulty(0.5, 1, 2, 5, 4000),
 ]
 
 var levelIndex = 0
@@ -128,7 +128,7 @@ Player.start = function()
 
 Player.update = function()
 {
-    if(this.lives <= 0)
+    if(this.lives < 0)
     {
         gm.GameOver()
     }
@@ -370,6 +370,26 @@ class Mineral extends GameObject{
     }
 }
 
+var Background = new GameObject("Background", "Assets/Background2.png")
+Background.start = function()
+{
+    this.pos.y = yLimit
+    this.pos.x = 0
+    this.rb = new RigidBody("Static", 0, -0.1, 0)
+    this.col = null
+    this.spriteMods.tiled = true
+    this.w = 192
+    this.h = 192*3
+}
+
+Background.update = function()
+{
+    if(Background.pos.y <= -yLimit)
+    {
+        Background.pos.y = yLimit+8
+    }
+}
+
 var titleScreen = new GameObject("Title", "Assets/Start.png");
 titleScreen.start = function()
 {
@@ -427,7 +447,7 @@ gameOverScreen.update = function ()
 }
 
 var Title = [titleScreen]
-var level1 = [gm, Player];
+var level1 = [Background, gm, Player];
 var Victory = [victoryScreen];
 var GameOver = [gameOverScreen]
 

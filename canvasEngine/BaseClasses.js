@@ -50,6 +50,7 @@ class GameObject {
             hue: null, //(0-100)
             saturation: null, //(0-400)
             luminosity: null, //(0-100)
+            tiled: false
         }
         
         this.pos = new Vector2(0, 0);

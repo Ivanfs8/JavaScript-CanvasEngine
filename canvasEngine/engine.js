@@ -82,27 +82,7 @@ function keyUp(e)
 //render images
 function drawImage(img, x, y, width, height, mods) 
 {
-    ctx.save();
-    
-    //if(typeof width === "undefined") width = img.width;
-    //if(typeof height === "undefined") height = img.height;
-    //if(typeof center === "undefined") center = false;
-    
-    // Set rotation point to center of image, instead of top/left
-    x -= width/2;
-    y -= height/2;
-    
-    // Set the origin to the center of the image
-    ctx.translate(x + width/2, y + height/2);
-    
-    // Rotate the canvas around the origin
-    //var rad = 2 * Math.PI - deg * Math.PI / 180;    
-    //context.rotate(rad);
-    
-    // Flip/flop the canvas
-    //if(flip) flipScale = -1; else flipScale = 1;
-    //if(flop) flopScale = -1; else flopScale = 1;
-    ctx.scale(1, -1);    
+    ctx.save();   
     
     //HSL
     if(mods.hue != null || mods.saturation != null || mods.luminosity != null)
@@ -110,9 +90,49 @@ function drawImage(img, x, y, width, height, mods)
         ctx.filter = "brightness("+ (100+mods.luminosity) +"%)"
     }else{ctx.filter = "none"}
 
-    // Draw the image    
-    ctx.drawImage(img, -width/2, -height/2, width, height);
-    
+    if(!mods.tiled)
+    {
+        //if(typeof width === "undefined") width = img.width;
+        //if(typeof height === "undefined") height = img.height;
+        //if(typeof center === "undefined") center = false;
+        
+        // Set rotation point to center of image, instead of top/left
+        //x -= width/2;
+        //y -= height/2;
+        
+        // Set the origin to the center of the image
+        ctx.translate(x, y);
+        
+        // Rotate the canvas around the origin
+        //var rad = 2 * Math.PI - deg * Math.PI / 180;    
+        //context.rotate(rad);
+        
+        // Flip/flop the canvas
+        //if(flip) flipScale = -1; else flipScale = 1;
+        //if(flop) flopScale = -1; else flopScale = 1;
+        ctx.scale(1, -1);
+
+        // Draw the image    
+        ctx.drawImage(img, -width/2, -height/2, width, height);
+    }
+    else
+    { 
+        // Set rotation point to center of image, instead of top/left
+        let xb = -width/2;
+        let yb = -height/2;
+        
+        // Set the origin to the center of the image
+        ctx.translate(x, y)
+
+        ctx.scale(1,1)
+
+        //draw pattern
+        let pat = ctx.createPattern(img, "repeat");
+        ctx.rect(xb, yb, width, height);
+        ctx.fillStyle = pat;
+        ctx.fill();
+    }
+
     ctx.restore();
 }
 
