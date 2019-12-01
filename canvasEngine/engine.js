@@ -117,19 +117,21 @@ function drawImage(img, x, y, width, height, mods)
     }
     else
     { 
-        // Set rotation point to center of image, instead of top/left
+        // set draw cordinates
         let xb = -width/2;
         let yb = -height/2;
         
-        // Set the origin to the center of the image
-        ctx.translate(x, y)
-
+        //restore cordinate to top left
+        ctx.translate(xb, yb)
         ctx.scale(1,1)
 
-        //draw pattern
+        //draw pattern in rect        
         let pat = ctx.createPattern(img, "repeat");
-        ctx.rect(xb, yb, width, height);
+        ctx.rect(x, y, width, height);
         ctx.fillStyle = pat;
+        
+        //translate again to center pivot before drawing
+        ctx.translate(x, y)
         ctx.fill();
     }
 

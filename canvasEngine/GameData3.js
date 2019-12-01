@@ -370,7 +370,7 @@ class Mineral extends GameObject{
     }
 }
 
-var Background = new GameObject("Background", "Assets/Background2.png")
+var Background = new GameObject("Background", "Assets/Background.png")
 Background.start = function()
 {
     this.pos.y = yLimit
