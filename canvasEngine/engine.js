@@ -171,7 +171,8 @@ var lastGO_ID = 0
 function gameStart(Scenes, level = 0)
 {
     currentLevel = level;
-    gameObjects = [];
+    delete gameObjects
+    //gameObjects = [];
 
     gameObjects = [...Scenes[level]];    
 

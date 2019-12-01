@@ -67,8 +67,11 @@ class GameObject {
 }
 
 function Destroy(toDestroy){
-    toDestroy = toDestroy.gameObject;
-    gameObjects = gameObjects.filter(k => k.gameObject != toDestroy);
+    let index = gameObjects.indexOf(toDestroy)
+    delete gameObjects[index]    
+    //toDestroy = toDestroy.gameObject;
+    //gameObjects = gameObjects.filter(k => k.gameObject != toDestroy);
+    gameObjects = gameObjects.filter(k => k != undefined);
     //gameObjects.slice(toRemove, 1);
 };
 
