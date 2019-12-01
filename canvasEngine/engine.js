@@ -121,7 +121,7 @@ function drawImage(img, x, y, width, height, mods)
         let xb = -width/2;
         let yb = -height/2;
         
-        //restore cordinate to top left
+        //restore cordinates to top left
         ctx.translate(xb, yb)
         ctx.scale(1,1)
 

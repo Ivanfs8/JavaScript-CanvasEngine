@@ -53,6 +53,7 @@ gm.update = function()
 {
     Score.text = gm.Score.toString();
     Lives.text = Player.lives
+    LevelCanvas.text = "LV " + (levelIndex+1)
     if(gm.Score >= LevelDificulty[levelIndex].ScoreObjective)
     {        
         //this.play = false
@@ -419,6 +420,7 @@ victoryScreen.start = function()
     play = false
     Score.text = ""
     Lives.text = ""
+    LevelCanvas.text = ""
 }
 victoryScreen.update = function ()
 {
@@ -455,6 +457,7 @@ var Scenes = [Title, level1, Victory, GameOver];
 
 var Score = new TextObject("Squarebit", 2,"right", 90, -80, "white");
 var Lives = new TextObject("Squarebit", 2,"left", -90, -80, "red");
-var Canvas = [Score, Lives]
+var LevelCanvas = new TextObject("Squarebit", 1,"right", 90, -70, "white");
+var Canvas = [Score, Lives, LevelCanvas]
 UserInterface = Canvas
 gameStart(Scenes, 0);
