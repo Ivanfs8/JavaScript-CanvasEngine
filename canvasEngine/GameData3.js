@@ -306,7 +306,7 @@ class Asteroid extends GameObject{
                 Player.lives -= 1
             }            
 
-            if(this.pos.y < -canvas.height*0.6)
+            if(this.pos.y < -yLimit-60)
             {
                 Destroy(this)
             }
@@ -365,6 +365,11 @@ class Mineral extends GameObject{
             {
                 Destroy(this)
                 gm.Score += this.value
+            }
+
+            if(this.pos.y == -yLimit-60)
+            {
+                Destroy(this)
             }
         }
 
